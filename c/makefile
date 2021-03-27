@@ -20,7 +20,7 @@ COMPILER_FLAGS = -w
 LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2
 
 #OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = 01_hello_SDL
+OBJ_NAME = fireballC
 
 #This is the target that compiles our executable
 all : $(OBJS)
