@@ -13,7 +13,7 @@ LIBRARY_PATHS = -LF:\nim\nim-1.4.4\dist\mingw64\lib
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
 # -Wl,-subsystem,windows gets rid of the console window
-COMPILER_FLAGS = -w
+COMPILER_FLAGS = -w -std=c99
 # -Wl,-subsystem,windows
 
 #LINKER_FLAGS specifies the libraries we're linking against
