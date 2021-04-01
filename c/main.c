@@ -4,11 +4,13 @@
 #include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mouse.h>
+#include "ctools.h"
+#include "linkedList.h"
 
 #define L 1000
 #define H 1000
 #define RANDOM(n) (((float)rand() / (float)RAND_MAX) * (n))
-#define NB_BOULETTE 50
+#define NB_BOULETTE 5000
 #define MAX_VITESSE 45
 #define MAX_TAILLE 6
 #define MAX_DUREE 25
@@ -20,8 +22,11 @@ int compteur = 0;
 int poids = -5;
 int vit = 3;
 int dire = 60;
-typedef struct
+
+typedef struct _METEOR
 {
+    struct _METEOR *suivant;
+    struct _METEOR *precedent;
     float x;
     float y;
     float tps;
@@ -31,16 +36,40 @@ typedef struct
     int vie;
     double dX;
     double dY;
+
 } METEOR;
 
-METEOR arma[NB_BOULETTE];
+typedef struct
+{
+    METEOR *premier;
+    METEOR *dernier;
+    int nombreMeteor;
+    bool *Sprites[MAX_TAILLE];
+    SDL_Color listeCouleur[256];
 
-bool *Sprites[MAX_TAILLE];
+} CONTEXTE;
+
+METEOR arma[NB_BOULETTE];
 
 void DoPalette(SDL_Color *Palette)
 {
     int i;
-    for (i = 0; i < 64; i++)
+    for (i = 0; i < 128; i++)
+    {
+        Palette[i].r = i;
+        Palette[i].g = 0;
+        Palette[i].b = 0;
+    }
+    for (i = 128; i < 256; i++)
+    {
+        Palette[i].r = i;
+        Palette[i].g = (i - 128) * 2;
+        Palette[i].b = 0;
+    }
+    Palette[255].r = 255;
+    Palette[255].g = 255;
+    Palette[255].b = 255;
+    /*for (i = 0; i < 64; i++)
     {
         Palette[i].r = i;
         Palette[i].g = 0;
@@ -48,18 +77,18 @@ void DoPalette(SDL_Color *Palette)
     }
     for (i = 64; i < 128; i++)
     {
-        Palette[i].r = 255;
-        Palette[i].g = i - 256;
+        Palette[i].r = i;
+        Palette[i].g = i - 64;
         Palette[i].b = 0;
     }
     for (i = 128; i < 256; i++)
     {
-        Palette[i].r = 255;
-        Palette[i].g = 255;
-        Palette[i].b = (i - 258) >> 1;
-    }
+        Palette[i].r = i;
+        Palette[i].g = i-128;
+        Palette[i].b = 0;//(i - 128) >> 1;
+    }*/
 }
-void InitSprite()
+void InitSprite(bool *Sprites[MAX_TAILLE])
 {
     for (int i = 0; i < MAX_TAILLE; i++)
     {
@@ -174,7 +203,7 @@ void InitSprite()
     }
 }
 
-void drawSprite(void)
+void drawSprite(bool *Sprites[MAX_TAILLE])
 {
     for (int inc = 0; inc < MAX_TAILLE; inc++)
     {
@@ -194,41 +223,59 @@ void drawSprite(void)
     }
 }
 
-void Init_boulette(int boulette)
+void Init_boulette(METEOR* meteor)
 {
-    arma[boulette].dir = 1 + (rand() % 360);
-    arma[boulette].vitesse = 25 + (rand() % MAX_VITESSE);
-    arma[boulette].taille = 1 + (rand() % MAX_TAILLE);
-    arma[boulette].tps = 0;
-    arma[boulette].vie = 1 + (rand() % MAX_DUREE);
-    arma[boulette].dX = cos((arma[boulette].dir) * (180 / PI));
-    arma[boulette].dY = sin((arma[boulette].dir) * (180 / PI));
+    meteor->dir = 1 + (rand() % 360);
+    meteor->vitesse = 25 + (rand() % MAX_VITESSE);
+    meteor->taille = 1 + (rand() % MAX_TAILLE);
+    meteor->tps = 0;
+    meteor->vie = 1 + (rand() % MAX_DUREE);
+    meteor->dX = cos((meteor->dir) * PI / 180); // * (180 / PI));
+    meteor->dY = sin((meteor->dir) * PI / 180); // * (180 / PI));
 }
 
-void Init_boulettes(void)
+METEOR* initElmt(METEOR **lst)
 {
-    int i;
-    for (i = 0; i < NB_BOULETTE; i++)
+    METEOR *ptr = NULL;
+
+    srand(time(NULL));
+    *lst = (METEOR *)__CT_creerElement(sizeof(METEOR), NULL);
+    ptr = *lst;
+    Init_boulette(ptr);
+    for (int i = 0; i < NB_BOULETTE; i++)
     {
-        arma[i].vie = -1;
-        Init_boulette(i);
+        ptr = (METEOR *)__CT_creerElement(sizeof(METEOR), ptr);
+        Init_boulette(ptr);
     }
+
+    return ptr;
 }
 
-void Move_Boulette(void)
+
+
+void Move_Boulette(METEOR* meteor)
 {
     int i;
     float temps;
-    for (i = 0; i < NB_BOULETTE; i++)
-    {
-        arma[i].tps += 0.1;
-        temps = arma[i].tps;
-        arma[i].x = (double)(arma[i].vitesse * temps * arma[i].dX) + PTX;
-        arma[i].y = (double)(arma[i].vitesse * temps * arma[i].dY - (poids / 2) * (temps * temps)) + PTY;
+    METEOR *ptrMeteor;
 
-        if (/*arma[i].y >= H || arma[i].x >= L || arma[i].x < 0 ||*/ arma[i].tps >= arma[i].vie)
+i=0;
+    for (ptrMeteor=meteor;ptrMeteor!=NULL;ptrMeteor=ptrMeteor->suivant)
+    {
+        //printf("ici %d\n", i++);
+        ptrMeteor->tps += 0.1;
+        temps = ptrMeteor->tps;
+        ptrMeteor->x = (double)(ptrMeteor->vitesse * temps * cos((ptrMeteor->dir + temps * 10) * PI / 180) /*ptrMeteor->dX*/) + PTX;
+        ptrMeteor->y = (double)(ptrMeteor->vitesse * temps * sin((ptrMeteor->dir - temps * 10) * PI / 180) /*ptrMeteor->dY*/ - (poids / 2) * (temps * temps)) + PTY;
+
+        /* if(i==0)
         {
-            Init_boulette(i);
+            printf("dir:%f\n", arma[i].dir);
+            //printf("tmp:%f, vitesse:%d dx:%lf, dy:%lf, poids:%d, x:%f, y:%f\n", temps, arma[i].vitesse, arma[i].dX, arma[i].dY, poids, arma[i].x,arma[i].y);
+        }*/
+        if (/*arma[i].y >= H || arma[i].x >= L || arma[i].x < 0 ||*/ ptrMeteor->tps >= ptrMeteor->vie)
+        {
+            Init_boulette(ptrMeteor);
         }
     }
 }
@@ -264,9 +311,10 @@ void flou(int x1, int y1, int x2, int y2, SDL_Surface *surface)
     }
 }
 
-void Affiche_boulette(SDL_Surface *VScreen)
+void Affiche_boulette(SDL_Surface *VScreen, bool *Sprites[MAX_TAILLE], METEOR* meteor)
 {
     int i;
+    METEOR *ptrMeteor;
     char tabSprite[MAX_TAILLE][MAX_TAILLE] =
         {
             {0, 0, 1, 0, 0},
@@ -275,13 +323,13 @@ void Affiche_boulette(SDL_Surface *VScreen)
             {0, 1, 1, 1, 0},
             {0, 0, 1, 0, 0},
         };
-    for (i = 0; i < NB_BOULETTE; i++)
+    for (ptrMeteor=meteor;ptrMeteor!=NULL;ptrMeteor=ptrMeteor->suivant)
     {
-        int posX = arma[i].x;
-        int posY = arma[i].y;
-        int taille = arma[i].taille;
-        int vie = arma[i].vie;
-        int couleur = arma[i].tps >= vie ? 0 : 256 - (arma[i].tps * 256 / vie);
+        int posX = ptrMeteor->x;
+        int posY = ptrMeteor->y;
+        int taille = ptrMeteor->taille;
+        int vie = ptrMeteor->vie;
+        int couleur = ptrMeteor->tps >= vie ? 0 : 256 - (ptrMeteor->tps * 256 / vie);
         //méthode avec les sprites précalculés
         if (taille == 1)
         {
@@ -338,14 +386,49 @@ void Affiche_boulette(SDL_Surface *VScreen)
     }
 }
 
+void afficherPalette(SDL_Surface *VScreen)
+{
+    for (int incX = 0; incX < 40; incX++)
+    {
+        for (int incY = 0; incY < H; incY++)
+        {
+            Mem_Pixel(incX, incY, incY * 256 / H, VScreen);
+        }
+    }
+}
+
 void mousePress(SDL_MouseButtonEvent *bE)
 {
     if (bE->button == SDL_BUTTON_LEFT)
     {
         //handle a left-click
         printf("BOUTON!!!!!!\n");
-        SDL_Cursor cur = SDL_GetCursor
+        // SDL_Cursor cur = SDL_GetCursor
     }
+}
+
+typedef struct LBL_STR
+{
+    struct LBL_STR *suivant;
+    struct LBL_STR *precedent;
+    int i;
+    char une_chaine[25];
+} TYP_STR;
+
+
+
+void initContexte(CONTEXTE* contexte)
+{
+    contexte->nombreMeteor = 0;
+    DoPalette(contexte->listeCouleur);
+    contexte->dernier = initElmt(&contexte->premier);
+    InitSprite(contexte->Sprites);
+    drawSprite(contexte->Sprites);
+}
+
+void detruireContexte(CONTEXTE* contexte)
+{
+    __CT_libererElements(contexte->premier);
 }
 
 int main(int argv, char *argc[])
@@ -354,7 +437,8 @@ int main(int argv, char *argc[])
     SDL_Texture *sdlTexture;
     SDL_Event event;
     SDL_Rect r;
-    SDL_Palette *palette;
+
+    CONTEXTE contexte;
 
     long clk_tck = CLOCKS_PER_SEC;
     long nbFrame = 0L;
@@ -375,19 +459,16 @@ int main(int argv, char *argc[])
         printf("non ça veut pas créer!");
         return 0;
     }
-    palette = SDL_AllocPalette(256);
 
     SDL_Renderer *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
-    SDL_Color listeCouleur[256];
-    DoPalette(listeCouleur);
+
+    initContexte(&contexte);
 
     SDL_Surface *surface = SDL_CreateRGBSurface(SDL_SWSURFACE, L, H, 8, 0, 0, 0, 0);
-    SDL_SetPaletteColors(surface->format->palette, listeCouleur, 0, 256);
+    SDL_SetPaletteColors(surface->format->palette, contexte.listeCouleur, 0, 256);
     sdlTexture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
 
-    Init_boulettes();
-    InitSprite();
-    drawSprite();
+    
 
     while (1)
     {
@@ -405,9 +486,10 @@ int main(int argv, char *argc[])
             mousePress(&event.button);
         }
 
-        Move_Boulette();
-        Affiche_boulette(surface);
+        Move_Boulette(contexte.premier);
+        Affiche_boulette(surface, contexte.Sprites, contexte.premier);
         flou(1, 1, L - 1, H - 1, surface);
+        afficherPalette(surface);
         SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
         SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
         SDL_RenderPresent(sdlRenderer);
@@ -434,10 +516,9 @@ int main(int argv, char *argc[])
         {
             tickMin = tick;
         }
-        (void)printf("Temps consomme (s) : %lf , moyenne : %lf, min: %lf, Max: %lf\n", tick, moyenne, tickMin, tickMax);
+        //(void)printf("Temps consomme (s) : %lf , moyenne : %lf, min: %lf, Max: %lf\n", tick, moyenne, tickMin, tickMax);
     }
     SDL_DestroyRenderer(sdlRenderer);
-    SDL_FreePalette(palette);
     SDL_Quit();
 
     return 0;
