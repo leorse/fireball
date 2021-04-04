@@ -27,8 +27,6 @@ void moveParticule(PARTICULE *particule, CONTEXTE *contexte)
     }
 }
 
-
-
 void mousePress(SDL_MouseButtonEvent *bE, CONTEXTE *contexte)
 {
     if (bE->button == SDL_BUTTON_LEFT)
@@ -112,19 +110,17 @@ int main(int argv, char *argc[])
 
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
-                //do whatever you want to do after a mouse button was pressed,
-                // e.g.:
                 mousePress(&event.button, &contexte);
             }
             if (event.type == SDL_KEYUP)
             {
-                keyPress(&event.button, &contexte);
+                keyPress(&event.key, &contexte);
             }
         }
         moveParticule(contexte.premier, &contexte);
         drawParticule(surface, contexte.Sprites, contexte.premier);
         blur(1, 1, L - 1, H - 1, surface);
-        if(contexte.drawPalette)
+        if (contexte.drawPalette)
         {
             afficherPalette(surface);
         }
