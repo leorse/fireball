@@ -54,3 +54,34 @@ void afficherPalette(SDL_Surface *VScreen)
         }
     }
 }
+
+void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface)
+{
+    char texte[50];
+    SDL_Rect dstRect = {100, 0 ,50, 200};
+
+    sprintf(texte, "Nombre Particule:%d", contexte->nombreMeteor);
+    afficherTexte(texte, contexte, surface, dstRect);
+}
+
+void afficherTexte(char* texte, CONTEXTE* contexte, SDL_Surface *surface, SDL_Rect rectDest)
+{
+    SDL_Color color = {0, 0, 0};
+    SDL_Surface *text_surface;
+
+    int w,h;
+    TTF_SizeUTF8(contexte->font,texte,&w,&h);
+    rectDest.w = w;
+    rectDest.h = h;
+    if (!(text_surface = TTF_RenderUTF8_Solid(contexte->font, texte, color)))
+    {
+        //handle error here, perhaps print TTF_GetError at least
+    }
+    else
+    {
+        SDL_FillRect( surface, &rectDest, 0);//SDL_MapRGB( surface->format, 0, 0, 0 ) );
+        SDL_BlitSurface(text_surface, NULL, surface, &rectDest);
+        //perhaps we can reuse it, but I assume not for simplicity.
+        SDL_FreeSurface(text_surface);
+    }
+}

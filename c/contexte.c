@@ -2,68 +2,78 @@
 #include "contexte.h"
 #include "particule.h"
 #include "initSDL.h"
-#include "affichage.h"
-#include "ctools.h"
-#include "linkedList.h"
+//#include "affichage.h"
 
 void initContexte(CONTEXTE *contexte)
 {
     contexte->nombreMeteor = 0;
     DoPalette(contexte->listeCouleur);
-    contexte->dernier = initElmt(&contexte->premier);
+    contexte->dernier = initElmt(contexte);
     InitSprite(contexte->Sprites);
     drawSprite(contexte->Sprites);
 
     contexte->drawPalette = false;
+    contexte->drawBoard = false;
+    contexte->drawBlur = true;
 }
 
-void addParticule(CONTEXTE* contexte, int x, int y)
+void addParticule(CONTEXTE *contexte, int x, int y)
 {
     PARTICULE *ptr = NULL;
-    ptr = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), contexte->dernier);
-    ParticuleFactory(ptr);
-    ptr->refX = x;
-    ptr->refY = y;
-    ptr->effemere = true;
-    contexte->dernier = ptr;
+    for (int i = 0; i < 50; i++)
+    {
+        ptr = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), contexte->dernier);
+        ParticuleFactory(ptr);
+        ptr->refX = x;
+        ptr->refY = y;
+        ptr->ephemere = true;
+        contexte->dernier = ptr;
+        contexte->nombreMeteor++;
+    }
 }
 
-PARTICULE* removeParticule(CONTEXTE* contexte, PARTICULE* particule)
+PARTICULE *removeParticule(CONTEXTE *contexte, PARTICULE *particule)
 {
-    PARTICULE* retour = NULL;
-    if(particule == contexte->premier)
+    PARTICULE *retour = NULL;
+    if (particule == contexte->premier)
     {
         contexte->premier = contexte->premier->suivant;
         retour = contexte->premier;
     }
-    else if(particule == contexte->dernier)
+    else if (particule == contexte->dernier)
     {
         contexte->dernier = contexte->dernier->precedent;
         retour = contexte->dernier;
     }
-    else{
+    else
+    {
         retour = particule->suivant;
     }
     __CT_libererUnElement(particule);
+    contexte->nombreMeteor--;
     return retour;
 }
 
-PARTICULE *initElmt(PARTICULE **lst)
+PARTICULE *initElmt(CONTEXTE *contexte)
 {
     PARTICULE *ptr = NULL;
-
+    PARTICULE **lst = &(contexte->premier);
     srand(time(NULL));
     *lst = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), NULL);
     ptr = *lst;
     ParticuleFactory(ptr);
     ptr->refX = PTX;
     ptr->refY = PTY;
-    for (int i = 0; i < NB_BOULETTE-1; i++)
+
+    contexte->nombreMeteor++;
+
+    for (int i = 0; i < NB_BOULETTE - 1; i++)
     {
         ptr = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), ptr);
         ParticuleFactory(ptr);
         ptr->refX = PTX;
         ptr->refY = PTY;
+        contexte->nombreMeteor++;
     }
 
     return ptr;
@@ -72,6 +82,7 @@ PARTICULE *initElmt(PARTICULE **lst)
 void detruireContexte(CONTEXTE *contexte)
 {
     __CT_libererElements(contexte->premier);
+    TTF_CloseFont(contexte->font);
 }
 
 void DoPalette(SDL_Color *Palette)
@@ -228,7 +239,17 @@ void drawSprite(bool *Sprites[MAX_TAILLE])
     }
 }
 
-void switchPalette(CONTEXTE* contexte)
+void switchPalette(CONTEXTE *contexte)
 {
     contexte->drawPalette = !contexte->drawPalette;
+}
+
+void switchBoard(CONTEXTE *contexte)
+{
+    contexte->drawBoard = !contexte->drawBoard;
+}
+
+void switchBlur(CONTEXTE *contexte)
+{
+    contexte->drawBlur = !contexte->drawBlur;
 }

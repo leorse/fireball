@@ -28,7 +28,7 @@ typedef struct _PARTICULE
     double dX;
     double dY;
 
-    bool effemere;
+    bool ephemere;
 
     float refX, refY;
 

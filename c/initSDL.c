@@ -1,7 +1,6 @@
 #include "initSDL.h"
 #include "contexte.h"
 
-
 bool initSDL(CONTEXTE *contexte, SDL_Surface **surface, SDL_Renderer **sdlRenderer)
 {
     SDL_Window *sdlWindow;
@@ -12,8 +11,17 @@ bool initSDL(CONTEXTE *contexte, SDL_Surface **surface, SDL_Renderer **sdlRender
     }
     if (TTF_Init() < 0)
     {
-        //printf("Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
+        printf("Erreur d'initialisation de TTF_Init : %s\n", TTF_GetError());
         exit(EXIT_FAILURE);
+    }
+
+    // load font.ttf at size 16 into font
+    
+    contexte->font = TTF_OpenFont("FreeSans.otf", 16);
+    if (!contexte->font)
+    {
+        printf("TTF_OpenFont: %s\n", TTF_GetError());
+        // handle error
     }
 
     if ((sdlWindow = SDL_CreateWindow("ma fenêtre", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, L, H, SDL_WINDOW_OPENGL)) == NULL)

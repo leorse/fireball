@@ -41,13 +41,17 @@ void mousePress(SDL_MouseButtonEvent *bE, CONTEXTE *contexte)
 void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
 {
     SDL_Keysym ks = kE->keysym;
-    SDL_Log("Physical %s key acting as %s key",
-            SDL_GetScancodeName(kE->keysym.scancode),
-            SDL_GetKeyName(kE->keysym.sym));
     if (kE->keysym.scancode == SDL_SCANCODE_P)
     {
-        printf("BOUTON P\n");
         switchPalette(contexte);
+    }
+    if (kE->keysym.scancode == SDL_SCANCODE_B)
+    {
+        switchBoard(contexte);
+    }
+    if (kE->keysym.scancode == SDL_SCANCODE_F)
+    {
+        switchBlur(contexte);
     }
 }
 
@@ -119,16 +123,28 @@ int main(int argv, char *argc[])
         }
         moveParticule(contexte.premier, &contexte);
         drawParticule(surface, contexte.Sprites, contexte.premier);
-        blur(1, 1, L - 1, H - 1, surface);
+        if (contexte.drawBlur)
+        {
+            blur(1, 1, L - 1, H - 1, surface);
+        }
         if (contexte.drawPalette)
         {
             afficherPalette(surface);
         }
+        if (contexte.drawBoard)
+        {
+            afficherBoard(&contexte, surface);
+        }
+
         SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
         SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
+
         SDL_RenderPresent(sdlRenderer);
         //pour effacer
-        //SDL_FillRect( surface, NULL, SDL_MapRGB( surface->format, 0, 0, 0 ) );
+        if (!contexte.drawBlur)
+        {
+            SDL_FillRect( surface, NULL, 0 );
+        }
         SDL_DestroyTexture(texture);
 
         /* Recuperation du temps final en "clock ticks" */

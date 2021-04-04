@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <time.h>
 
 #include <SDL2/SDL.h>
@@ -23,15 +24,18 @@ typedef struct
     int nombreMeteor;
     bool *Sprites[MAX_TAILLE];
     SDL_Color listeCouleur[256];
+    TTF_Font *font;
 
     bool drawPalette;
+    bool drawBoard;
+    bool drawBlur;
 
 } CONTEXTE;
 
 
 void initContexte(CONTEXTE *);
 void detruireContexte(CONTEXTE *contexte);
-PARTICULE *initElmt(PARTICULE **);
+PARTICULE *initElmt(CONTEXTE* contexte);
 void DoPalette(SDL_Color *Palette);
 void InitSprite(bool *Sprites[]);
 void drawSprite(bool *Sprites[]);
@@ -40,4 +44,6 @@ PARTICULE* removeParticule(CONTEXTE* contexte, PARTICULE* particule);
 
 //GUI
 void switchPalette(CONTEXTE* );
+void switchBlur(CONTEXTE* );
+void switchBoard(CONTEXTE* contexte);
 

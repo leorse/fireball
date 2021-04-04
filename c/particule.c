@@ -60,7 +60,7 @@ bool faireVivre(PARTICULE *particule)
     particule->Mover(particule);
     if (particule->tps >= particule->vie)
     {
-        if(particule->effemere)
+        if(particule->ephemere)
         {
             return true;
         }
@@ -90,7 +90,7 @@ void ParticuleFactory(PARTICULE *particule)
     particule->y = 0;
     particule->dX = 0;
     particule->dY = 0;
-    particule->effemere = false;
+    particule->ephemere = false;
 
     //déplacement simple ou en tour
     if (rand() % 2)
