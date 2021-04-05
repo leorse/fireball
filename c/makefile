@@ -4,11 +4,15 @@ OBJS = ./src/main.c ./src/particule.c ./src/contexte.c ./src/initSDL.c ./src/cto
 #CC specifies which compiler we're using
 CC = gcc
 
-#INCLUDE_PATHS specifies the additional include paths we'll need
-INCLUDE_PATHS = -IF:\nim\nim-1.4.4\dist\mingw64\include\SDL2 -I./include
+INCLUDE_PATHS = -I./include
+LIBRARY_PATHS =
+ifeq ($(OS),Windows_NT)
+	#INCLUDE_PATHS specifies the additional include paths we'll need
+	INCLUDE_PATHS += -IF:\nim\nim-1.4.4\dist\mingw64\include\SDL2
 
-#LIBRARY_PATHS specifies the additional library paths we'll need
-LIBRARY_PATHS = -LF:\nim\nim-1.4.4\dist\mingw64\lib
+	#LIBRARY_PATHS specifies the additional library paths we'll need
+	LIBRARY_PATHS += -LF:\nim\nim-1.4.4\dist\mingw64\lib
+endif
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
@@ -16,8 +20,14 @@ LIBRARY_PATHS = -LF:\nim\nim-1.4.4\dist\mingw64\lib
 COMPILER_FLAGS = -std=c99 -D__CT_MEMORY_DEBUG__=1
 # -Wl,-subsystem,windows
 
+LINKER_FLAGS =
+ifeq ($(OS),Windows_NT)
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lmingw32 -lSDL2_ttf -lSDL2main -lSDL2 
+	LINKER_FLAGS += -lmingw32 
+else
+	LINKER_FLAGS += -lm
+endif
+LINKER_FLAGS += -lSDL2_ttf -lSDL2main -lSDL2 
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = ./output/fireballC
