@@ -55,12 +55,46 @@ void afficherPalette(SDL_Surface *VScreen)
     }
 }
 
-void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface)
+char* calculerInfosTimer(char* texte, clock_t t1, clock_t t2, long nbFrame)
 {
-    char texte[50];
+    long clk_tck = CLOCKS_PER_SEC;
+
+    static double cumul = 0;
+    double moyenne = 0;
+    double tickMin, tickMax = 0;
+
+    double tick = (double)(t2 - t1) / (double)clk_tck;
+    double fps = (t2 - t1)==0?1000:1000/((double)(t2 - t1)*1000 / (double)clk_tck);
+    if (nbFrame == 100)
+    {
+        cumul = 0;
+        nbFrame = 1;
+        tickMax = tickMin = 0;
+    }
+    cumul += fps;
+    moyenne = cumul / nbFrame;
+    if (tick > tickMax || tickMax == 0)
+    {
+        tickMax = tick;
+    }
+    if (tick < tickMin || tickMin == 0)
+    {
+        tickMin = tick;
+    }
+    sprintf(texte, "FPS : %ld, moyenne: %lf", (long)fps, moyenne);
+
+}
+
+void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface, clock_t t1, clock_t t2, long nbFrame)
+{
+    char texte[100];
     SDL_Rect dstRect = {100, 0 ,50, 200};
 
     sprintf(texte, "Nombre Particule:%d", contexte->nombreMeteor);
+    
+    afficherTexte(texte, contexte, surface, dstRect);
+    calculerInfosTimer(texte, t1, t2, nbFrame);
+    dstRect.y = 25;
     afficherTexte(texte, contexte, surface, dstRect);
 }
 

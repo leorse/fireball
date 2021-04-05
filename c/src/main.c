@@ -55,33 +55,7 @@ void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
     }
 }
 
-void afficherInfosTimer(clock_t t1, clock_t t2, long nbFrame)
-{
-    long clk_tck = CLOCKS_PER_SEC;
 
-    double cumul = 0;
-    double moyenne = 0;
-    double tickMin, tickMax = 0;
-
-    double tick = (double)(t2 - t1) / (double)clk_tck;
-    if (nbFrame == 100)
-    {
-        cumul = 0;
-        nbFrame = 1;
-        tickMax = tickMin = 0;
-    }
-    cumul += tick;
-    moyenne = cumul / nbFrame;
-    if (tick > tickMax || tickMax == 0)
-    {
-        tickMax = tick;
-    }
-    if (tick < tickMin || tickMin == 0)
-    {
-        tickMin = tick;
-    }
-    //(void)printf("Temps consomme (s) : %lf , moyenne : %lf, min: %lf, Max: %lf\n", tick, moyenne, tickMin, tickMax);
-}
 
 int main(int argv, char *argc[])
 {
@@ -131,9 +105,12 @@ int main(int argv, char *argc[])
         {
             afficherPalette(surface);
         }
+        /* Recuperation du temps final en "clock ticks" */
+        
         if (contexte.drawBoard)
         {
-            afficherBoard(&contexte, surface);
+            t2 = clock();
+            afficherBoard(&contexte, surface, t1, t2, nbFrame);
         }
 
         SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
@@ -146,11 +123,7 @@ int main(int argv, char *argc[])
             SDL_FillRect( surface, NULL, 0 );
         }
         SDL_DestroyTexture(texture);
-
-        /* Recuperation du temps final en "clock ticks" */
-        t2 = clock();
-
-        afficherInfosTimer(t1, t2, nbFrame);
+        
     }
 
     SDL_DestroyRenderer(sdlRenderer);
