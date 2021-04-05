@@ -1,3 +1,6 @@
+# C part of this fireball project
+
+
 # How to compile
 ## On windows
 Install gcc (Mingw64), and put libSDL2 headers in include and libs in lib path.
