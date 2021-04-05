@@ -31,10 +31,7 @@ void mousePress(SDL_MouseButtonEvent *bE, CONTEXTE *contexte)
 {
     if (bE->button == SDL_BUTTON_LEFT)
     {
-        //handle a left-click
-        printf("BOUTON!!!!!! %d,%d\n", bE->x, bE->y);
         addParticule(contexte, bE->x, bE->y);
-        // SDL_Cursor cur = SDL_GetCursor
     }
 }
 
