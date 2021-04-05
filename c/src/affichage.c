@@ -100,7 +100,7 @@ void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface, clock_t t1, clock_t
 
 void afficherTexte(char* texte, CONTEXTE* contexte, SDL_Surface *surface, SDL_Rect rectDest)
 {
-    SDL_Color color = {0, 0, 0};
+    SDL_Color color = {255, 255, 255};
     SDL_Surface *text_surface;
 
     int w,h;
