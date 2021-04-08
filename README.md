@@ -10,18 +10,20 @@ classDiagram
     METEOR<|--Comet
     METEOR*--Contexte
     class METEOR {
-        METEOR* suivant;
+        METEOR* suivant
         METEOR* precedent
         int x
         int y
         double dY
         double dX
-        double vie;
-        double tps;
+        double vie
+        double tps
+        bool ephemere
 
         InitMeteor()
-        Drawer()
-        Mover()
+        MeteorFactory()$
+        Drawer()*
+        Mover()*
     }
 
     class FireBall {
@@ -31,10 +33,26 @@ classDiagram
         
     }
 
+    class Draw {
+        blur()
+        drawSprite(METOR*)
+    }
+
     class Contexte {
         METEOR* premier
         METEOR* dernier
         SDL_Color palette
+        drawPalette
+        drawBoard
+        drawBlur
+        addParticule()
+        removeParticule
+    }
+
+    class SDLManagment {
+        SDLManagment()
+        ~SDLManagment()
+        pollEvent()
     }
 ```
 
