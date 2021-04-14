@@ -12,6 +12,7 @@ Contexte::Contexte()
 
 Contexte::~Contexte()
 {
+    cout<<"contexte détruit"<<endl;
 }
 
 void Contexte::growParticules()

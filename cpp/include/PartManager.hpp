@@ -6,21 +6,22 @@
 #define CPP_PARTMANGER_H
 
 #include <list>
+#include <memory>
 
 #include "Particule.hpp"
 
+using namespace std;
 
 class PartManager
 {
 public:
     PartManager();
     ~PartManager();
-    PartManager(const std::list<Particule> &particules);
 
-    std::list<Particule> particules;
-    static const int NB_PARTICULE = 1;
+    list<unique_ptr<Particule>> particules;
+    static const int NB_PARTICULE = 100;
 
-    Particule factoryParticule();
+    unique_ptr<Particule> factoryParticule();
 
     void growParticules();
 

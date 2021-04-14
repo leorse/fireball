@@ -22,7 +22,9 @@ PartManager::PartManager()
 }
 
 PartManager::~PartManager()
-{/*
+{
+    cout<<"partmanager détruit"<<endl;
+    /*
     for(auto it = this->particules.begin();it!=this->particules.end(); it++)
     {
         Particule *particule = *it;
@@ -30,20 +32,20 @@ PartManager::~PartManager()
     }*/
 }
 
-Particule PartManager::factoryParticule()
+unique_ptr<Particule> PartManager::factoryParticule()
 {
 
     std::srand(std::time(nullptr));
     int type = std::rand() % 2;
     if (type == static_cast<int>(TypeParticule::COMET))
     {
-        return Comet();
+        return make_unique<Comet>() ;
     }
     if (type == static_cast<int>(TypeParticule::FIREBALL))
     {
-        return Comet();
+        return make_unique<Comet>() ;
     }
-    return Comet();
+    return make_unique<Comet>() ;
 }
 
 
@@ -53,13 +55,14 @@ void PartManager::growParticules()
     for(auto it = this->particules.begin();it!=this->particules.end(); it++, inc++)
     {
         cout<<"je fais grandir"<<endl;
-        Particule particule = *it;
-        cout<<"de type:"<<static_cast<int>(particule.getType())<<" et x:"<<particule.getX()<< endl;
-        particule.grow();
-        if(!particule.isAlive())
+        //Particule& particule = it;
+        auto particule = it->get();
+        cout<<"de type:"<<static_cast<int>(particule->getType())<<" et x:"<<particule->getX()<< endl;
+        particule->grow();
+        if(!particule->isAlive())
         {
-            particule.initLife(false);
-            std::cout<<"elle creve!!:"<<particule.getX()<<std::endl;
+            particule->initLife(false);
+            std::cout<<"elle creve!!:"<<particule->getX()<<std::endl;
         }
     }
 }
