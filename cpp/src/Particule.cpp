@@ -6,16 +6,23 @@
 
 #include "Particule.hpp"
 
+using namespace std;
 
 Comet::Comet()
 {
     this->setType(TypeParticule::COMET);
 }
 
+Comet::~Comet()
+{
+    std::cout<<"particule détruite"<<std::endl;
+}
+
 void Comet::move(void)
 {
     float oldX = this->x;
     float oldY = this->y;
+    cout<<"je bouge!!"<<endl;
     if(this->tps==0)
     {
         oldX = 0;
@@ -29,11 +36,11 @@ void Comet::move(void)
 
     this->dX = (this->x-oldX)*5;
     this->dY = (this->y-oldY)*5;
-    std::cout<<"x:"<<this->GetX()<<",y:"<<this->GetY()<<",tps:"<<this->GetTps()<<",vie:"<<this->GetVie()<<std::endl;
+    std::cout<<"x:"<<this->getX()<<",y:"<<this->getY()<<",tps:"<<this->getTps()<<",vie:"<<this->getVie()<<std::endl;
 }
 
 void Comet::grow(void)
-{
+{cout<<"je bouge ici aussi"<<endl;
     this->move();
 }
 
@@ -66,122 +73,122 @@ bool Particule::isAlive()
     return this->tps<this->vie;
 }
 
-float Particule::GetX() const
+float Particule::getX() const
 {
     return this->x;
 }
 
-void Particule::SetX(float x)
+void Particule::setX(float x)
 {
     this->x = x;
 }
 
-float Particule::GetY() const
+float Particule::getY() const
 {
     return this->y;
 }
 
-void Particule::SetY(float y)
+void Particule::setY(float y)
 {
     this->y = y;
 }
 
-float Particule::GetTps() const
+float Particule::getTps() const
 {
     return this->tps;
 }
 
-void Particule::SetTps(float tps)
+void Particule::setTps(float tps)
 {
     this->tps = tps;
 }
 
-float Particule::GetDir() const
+float Particule::getDir() const
 {
     return this->dir;
 }
 
-void Particule::SetDir(float dir)
+void Particule::setDir(float dir)
 {
     this->dir = dir;
 }
 
-float Particule::GetPoids() const
+float Particule::getPoids() const
 {
     return this->poids;
 }
 
-void Particule::SetPoids(float poids)
+void Particule::setPoids(float poids)
 {
     this->poids = poids;
 }
 
-int Particule::GetVitesse() const
+int Particule::getVitesse() const
 {
     return this->vitesse;
 }
 
-void Particule::SetVitesse(int vitesse)
+void Particule::setVitesse(int vitesse)
 {
     this->vitesse = vitesse;
 }
 
-int Particule::GetTaille() const
+int Particule::getTaille() const
 {
     return this->taille;
 }
 
-void Particule::SetTaille(int taille)
+void Particule::setTaille(int taille)
 {
     this->taille = taille;
 }
 
-int Particule::GetVie() const
+int Particule::getVie() const
 {
     return this->vie;
 }
 
-void Particule::SetVie(int vie)
+void Particule::setVie(int vie)
 {
     this->vie = vie;
 }
 
-double Particule::GetDX() const
+double Particule::getDX() const
 {
     return this->dX;
 }
 
-void Particule::SetDX(double dX)
+void Particule::setDX(double dX)
 {
     this->dX = dX;
 }
 
-double Particule::GetDY() const
+double Particule::getDY() const
 {
     return this->dY;
 }
 
-void Particule::SetDY(double dY)
+void Particule::setDY(double dY)
 {
     this->dY = dY;
 }
 
-bool Particule::GetEphemere() const
+bool Particule::getEphemere() const
 {
     return this->ephemere;
 }
 
-void Particule::SetEphemere(bool ephemere)
+void Particule::setEphemere(bool ephemere)
 {
     this->ephemere = ephemere;
 }
 
-float Particule::GetRefX() const
+float Particule::getRefX() const
 {
     return this->refX;
 }
 
-void Particule::SetRefX(float refX)
+void Particule::setRefX(float refX)
 {
     this->refX = refX;
 }
