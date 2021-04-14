@@ -46,6 +46,7 @@ Particule PartManager::factoryParticule()
     return Comet();
 }
 
+
 void PartManager::growParticules()
 {
     int inc =0;
