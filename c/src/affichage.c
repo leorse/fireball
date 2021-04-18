@@ -3,6 +3,7 @@
 #include "affichage.h"
 #include "particule.h"
 #include "contexte.h"
+#include "logo.h"
 
 void putPixel(int x, int y, int couleur, SDL_Surface *surface)
 {
@@ -41,6 +42,21 @@ void drawParticule(SDL_Surface *VScreen, bool *Sprites[MAX_TAILLE], PARTICULE *p
     for (ptrParticule = particule; ptrParticule != NULL; ptrParticule = ptrParticule->suivant)
     {
         ptrParticule->Drawer(ptrParticule, VScreen, Sprites);
+    }
+}
+
+void afficherLogo(SDL_Surface *VScreen)
+{
+    for (int incX = 0; incX < LOGO_W; incX++)
+    {
+        for (int incY = 0; incY < LOGO_H; incY++)
+        {
+            if(c_logo_map[incY*LOGO_W+incX] != 0x00)
+            {
+                putPixel(L-LOGO_W+incX, incY, 255, VScreen);
+            }
+            
+        }
     }
 }
 

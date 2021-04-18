@@ -15,6 +15,7 @@ void initContexte(CONTEXTE *contexte)
     contexte->drawPalette = false;
     contexte->drawBoard = false;
     contexte->drawBlur = true;
+    contexte->drawLogo = false;
 }
 
 void addParticule(CONTEXTE *contexte, int x, int y)
@@ -252,4 +253,9 @@ void switchBoard(CONTEXTE *contexte)
 void switchBlur(CONTEXTE *contexte)
 {
     contexte->drawBlur = !contexte->drawBlur;
+}
+
+void switchLogo(CONTEXTE *contexte)
+{
+    contexte->drawLogo = !contexte->drawLogo;
 }

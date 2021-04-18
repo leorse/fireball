@@ -50,6 +50,10 @@ void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
     {
         switchBlur(contexte);
     }
+    if (kE->keysym.scancode == SDL_SCANCODE_L)
+    {
+        switchLogo(contexte);
+    }
 }
 
 
@@ -101,6 +105,10 @@ int main(int argv, char *argc[])
         if (contexte.drawPalette)
         {
             afficherPalette(surface);
+        }
+        if (contexte.drawLogo)
+        {
+            afficherLogo(surface);
         }
         /* Recuperation du temps final en "clock ticks" */
         

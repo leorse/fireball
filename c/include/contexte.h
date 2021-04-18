@@ -29,6 +29,7 @@ typedef struct
     bool drawPalette;
     bool drawBoard;
     bool drawBlur;
+    bool drawLogo;
 
 } CONTEXTE;
 
@@ -45,5 +46,6 @@ PARTICULE* removeParticule(CONTEXTE* contexte, PARTICULE* particule);
 //GUI
 void switchPalette(CONTEXTE* );
 void switchBlur(CONTEXTE* );
-void switchBoard(CONTEXTE* contexte);
+void switchBoard(CONTEXTE* );
+void switchLogo(CONTEXTE* );
 
