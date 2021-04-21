@@ -15,6 +15,7 @@ public:
     static SDL_Renderer *sdlRenderer;
     static SDL_Surface *surface;
 
+    void render(void);
     SDLManagment();
     ~SDLManagment();
 };

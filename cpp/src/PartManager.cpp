@@ -1,73 +1,79 @@
-//
-// Created by osboxes on 13/04/2021.
-//
-
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <random>
 
 #include "PartManager.hpp"
+#include "App.hpp"
 
 using namespace std;
 
 PartManager::PartManager()
 {
-
     //création des particules
     for (int inc = 0; inc < PartManager::NB_PARTICULE; inc++)
     {
-        cout<<"j'aoute"<<endl;
         this->particules.push_back(this->factoryParticule());
     }
 }
 
 PartManager::~PartManager()
 {
-    cout<<"partmanager détruit"<<endl;
-    /*
-    for(auto it = this->particules.begin();it!=this->particules.end(); it++)
-    {
-        Particule *particule = *it;
-        delete *it;
-    }*/
+    cout << "partmanager détruit, taille:" << this->particules.size() << endl;
 }
 
 unique_ptr<Particule> PartManager::factoryParticule()
 {
 
-    std::srand(std::time(nullptr));
-    int type = std::rand() % 2;
+    std::uniform_int_distribution<int> uit{0, 2};
+
+    int type = uit(re);
+    cout << "rand type:" << type << endl;
     if (type == static_cast<int>(TypeParticule::COMET))
     {
-        return make_unique<Comet>() ;
+        auto part = make_unique<Comet>(re);
+        part.get()->setRefX(App::LARGEUR / 2);
+        part.get()->setRefY(App::HAUTEUR / 2);
+        return part;
     }
     if (type == static_cast<int>(TypeParticule::FIREBALL))
     {
-        return make_unique<Comet>() ;
+        auto part = make_unique<Comet>(re);
+        part.get()->setRefX(App::LARGEUR / 2);
+        part.get()->setRefY(App::HAUTEUR / 2);
+        return part;
     }
-    return make_unique<Comet>() ;
+    auto part = make_unique<Comet>(re);
+    part.get()->setRefX(App::LARGEUR / 2);
+    part.get()->setRefY(App::HAUTEUR / 2);
+    return part;
 }
 
+void PartManager::setSeed(std::default_random_engine re)
+{
+    this->re.seed(re());
+}
 
 void PartManager::growParticules()
 {
-    int inc =0;
-    for(auto it = this->particules.begin();it!=this->particules.end(); it++, inc++)
+    for (auto it = this->particules.begin(); it != this->particules.end(); it++)
     {
-        cout<<"je fais grandir"<<endl;
         //Particule& particule = it;
         auto particule = it->get();
-        cout<<"de type:"<<static_cast<int>(particule->getType())<<" et x:"<<particule->getX()<< endl;
         particule->grow();
-        if(!particule->isAlive())
+        if (!particule->isAlive())
         {
             particule->initLife(false);
-            std::cout<<"elle creve!!:"<<particule->getX()<<std::endl;
         }
     }
 }
 
 void PartManager::drawParticules()
 {
+    for (auto it = this->particules.begin(); it != this->particules.end(); it++)
+    {
+        //Particule& particule = it;
+        auto particule = it->get();
+        this->drawer.afficheurSimple(particule);
+    }
 }
-

@@ -2,31 +2,36 @@
 #include <ctime>
 #include <iostream>
 
-#include "Contexte.hpp"
+#include "App.hpp"
 
-Contexte::Contexte()
+App::App()
 {
     this->programAlive = true;
-
+    re.seed(time(0));
+    this->partManager.setSeed(re);
 }
 
-Contexte::~Contexte()
+App::~App()
 {
-    cout<<"contexte détruit"<<endl;
+    cout << "app détruit" << endl;
 }
 
-void Contexte::growParticules()
+void App::growParticules()
 {
     this->partManager.growParticules();
     this->partManager.drawParticules();
 }
 
-bool Contexte::isProgramAlive()
+bool App::isProgramAlive()
 {
     return this->programAlive;
 }
 
-void Contexte::stopProgram()
+void App::stopProgram()
 {
     this->programAlive = false;
+}
+
+void App::drawParticules()
+{
 }

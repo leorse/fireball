@@ -1,9 +1,12 @@
 #pragma once
 
+#include <random>
+
 enum class TypeParticule
 {
     FIREBALL = 0,
-    COMET = 1
+    COMET = 1,
+    NONE = 2
 };
 
 class Particule
@@ -26,10 +29,14 @@ protected:
 
     float refX, refY;
 
+    std::default_random_engine re;
+
 public:
     static const int MAX_VITESSE = 45;
-    static const int MAX_TAILLE = 6;
+    static const int MAX_TAILLE = 5;
     static const int MAX_DUREE = 25;
+
+    void setSeed(std::default_random_engine);
 
     float getX() const;
 
@@ -83,6 +90,10 @@ public:
 
     void setRefX(float refX);
 
+    float getRefY() const;
+
+    void setRefY(float refY);
+
     bool isAlive();
 
     void initLife(bool);
@@ -95,19 +106,21 @@ public:
     {
     };
 
+    void quisuisJe(void);
+
     Particule();
 
-    ~Particule()
-    {
-    };
+    virtual ~Particule();
 };
 
 class Comet : public Particule
 {
 public:
-    Comet();
+    Comet(std::default_random_engine);
 
     ~Comet();
+
+    void quisuisJe(void);
 
     void grow(void);
 

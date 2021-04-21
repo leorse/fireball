@@ -8,21 +8,21 @@
 
 using namespace std;
 
-Comet::Comet()
+Comet::Comet(std::default_random_engine dre)
 {
     this->setType(TypeParticule::COMET);
+    this->setSeed(dre);
 }
 
 Comet::~Comet()
 {
-    std::cout<<"particule détruite"<<std::endl;
+    std::cout<<"particule comete détruite"<<std::endl;
 }
 
 void Comet::move(void)
 {
     float oldX = this->x;
     float oldY = this->y;
-    cout<<"je bouge!!"<<endl;
     if(this->tps==0)
     {
         oldX = 0;
@@ -36,36 +36,67 @@ void Comet::move(void)
 
     this->dX = (this->x-oldX)*5;
     this->dY = (this->y-oldY)*5;
-    std::cout<<"x:"<<this->getX()<<",y:"<<this->getY()<<",tps:"<<this->getTps()<<",vie:"<<this->getVie()<<std::endl;
+
+    std::cout<<"oldx:"<<oldX<<",oldy:"<<oldY<<",refx:"<<this->refX<<", refy:"<<this->refY<<",x"<<this->x<<", y:"<<this->y<<",dx:"<<this->dX<<",dy:"<<this->dX<<std::endl;
 }
 
 void Comet::grow(void)
-{cout<<"je bouge ici aussi"<<endl;
+{
     this->move();
 }
+
+void Comet::quisuisJe(void)
+    {
+        cout<<"je suis comete"<<endl;
+    }
 
 //////// Particule
 
 Particule::Particule()
 {
     this->initLife(false);
+    this->setType(TypeParticule::NONE);
 }
+
+Particule::~Particule()
+{
+    cout<<"aaaargh je suis détruite!!!"<<endl;
+}
+
+void Particule::quisuisJe(void)
+    {
+        cout<<"je suis particule"<<endl;
+    }
 
 void Particule::initLife(bool ephemere)
 {
-    std::srand(std::time(nullptr));
+    //re.seed(time(0));
+    std::uniform_int_distribution<int> uit_dir{0,360};
+    std::uniform_int_distribution<int> uit_vitesse{0,Particule::MAX_VITESSE};
+    std::uniform_int_distribution<int> uit_taille{0,Particule::MAX_TAILLE};
+    std::uniform_int_distribution<int> uit_duree{0,Particule::MAX_DUREE};
+    
+    //std::srand(std::time(0));
+    //int type = std::rand() % 2;
+    //int type = uit(re);
     //une direction entre 1 et 360°
-    this->dir = std::rand() % 360;
+    this->dir = uit_dir(re);//std::rand() % 360;
     this->poids = -5;
-    this->vitesse = 25 + (std::rand() % Particule::MAX_VITESSE);
-    this->taille = 1 + (std::rand() % Particule::MAX_TAILLE);
+    this->vitesse = 25 + uit_vitesse(re);//(std::rand() % Particule::MAX_VITESSE);
+    this->taille = uit_taille(re);//(std::rand() % Particule::MAX_TAILLE);
     this->tps = 0;
-    this->vie = 1 + (std::rand() % Particule::MAX_DUREE);
+    this->vie = 1 + uit_duree(re);//(std::rand() % Particule::MAX_DUREE);
     this->x = 0;
     this->y = 0;
     this->dX = 0;
     this->dY = 0;
     this->ephemere = false;
+    //cout<< "init particule: dir:"<<this->dir<<", poids:"<<this->poids<<", vitesste:"<<this->vitesse<<", taille:"<<this->taille<<", vie:"<<this->vie<<endl;
+}
+
+void Particule::setSeed(std::default_random_engine re)
+{
+    this->re.seed(re());
 }
 
 bool Particule::isAlive()
@@ -191,6 +222,16 @@ float Particule::getRefX() const
 void Particule::setRefX(float refX)
 {
     this->refX = refX;
+}
+
+float Particule::getRefY() const
+{
+    return this->refY;
+}
+
+void Particule::setRefY(float refY)
+{
+    this->refY = refY;
 }
 
 TypeParticule Particule::getType() const
