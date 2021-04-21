@@ -10,12 +10,13 @@ void initContexte(CONTEXTE *contexte)
     DoPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
     InitSprite(contexte->Sprites);
-    drawSprite(contexte->Sprites);
+    //à décomter pour afficher les sprites
+    //drawSprite(contexte->Sprites);
 
     contexte->drawPalette = false;
     contexte->drawBoard = false;
     contexte->drawBlur = true;
-    contexte->drawLogo = false;
+    contexte->drawLogo = true;
 }
 
 void addParticule(CONTEXTE *contexte, int x, int y)
@@ -111,22 +112,12 @@ void InitSprite(bool *Sprites[MAX_TAILLE])
     {
         int taille = (i + 1) * (i + 1);
         Sprites[i] = (bool *)malloc(taille * sizeof(bool));
-        //printf("ici, taille:%d, sp=%p", taille, Sprites[i] );
         bool *sprite = Sprites[i];
-        /*char tabSprite[MAX_TAILLE][MAX_TAILLE] =
-            {
-                {0, 0, 1, 0, 0},
-                {0, 1, 1, 1, 0},
-                {1, 1, 1, 1, 1},
-                {0, 1, 1, 1, 0},
-                {0, 0, 1, 0, 0},
-            };*/
         //|1|
         if (i == 0)
         {
             sprite[0] = true;
         }
-        //|11|
         //|11|
         if (i == 1)
         {
@@ -134,16 +125,6 @@ void InitSprite(bool *Sprites[MAX_TAILLE])
                 {{true, false},
                  {false, true}};
             memcpy(sprite, tabSprite, sizeof(tabSprite));
-            printf("ts\n");
-            printf("%c,", tabSprite[0][0] + 'A');
-            printf("%c\n", tabSprite[1][0] + 'A');
-            printf("%c,", tabSprite[0][1] + 'A');
-            printf("%c,", tabSprite[1][1] + 'A');
-            printf("s\n");
-            printf("%c,", sprite[0] + 'A');
-            printf("%c\n", sprite[1] + 'A');
-            printf("%c,", sprite[2] + 'A');
-            printf("%c,", sprite[3] + 'A');
         }
         if (i == 2)
         {
@@ -154,38 +135,6 @@ void InitSprite(bool *Sprites[MAX_TAILLE])
                     {false, true, false},
                 };
             memcpy(sprite, tabSprite, sizeof(tabSprite));
-            printf("ts\n");
-            printf("%c,", tabSprite[0][0] + 'A');
-            printf("%c,", tabSprite[1][0] + 'A');
-            printf("%c\n", tabSprite[2][0] + 'A');
-            printf("%c,", tabSprite[0][1] + 'A');
-            printf("%c,", tabSprite[1][1] + 'A');
-            printf("%c\n", tabSprite[2][1] + 'A');
-            printf("%c,", tabSprite[0][2] + 'A');
-            printf("%c,", tabSprite[1][2] + 'A');
-            printf("%c\n", tabSprite[2][2] + 'A');
-            printf("s\n");
-            printf("%c,", sprite[0] + 'A');
-            printf("%c,", sprite[1] + 'A');
-            printf("%c\n,", sprite[2] + 'A');
-            printf("%c,", sprite[3] + 'A');
-            printf("%c,", sprite[4] + 'A');
-            printf("%c\n,", sprite[5] + 'A');
-            printf("%c,", sprite[6] + 'A');
-            printf("%c,", sprite[7] + 'A');
-            printf("%c", sprite[8] + 'A');
-            printf("S\n");
-            bool *spr = Sprites[2];
-            //printf("S %p s %p", &Sprites[2], &spr);
-            printf("%c,", *(spr + 0) + 'A');
-            printf("%c,", *(spr + 1) + 'A');
-            printf("%c\n,", *(spr + 2) + 'A');
-            printf("%c,", *(spr + 3) + 'A');
-            printf("%c,", *(spr + 4) + 'A');
-            printf("%c\n,", *(spr + 5) + 'A');
-            printf("%c,", *(spr + 6) + 'A');
-            printf("%c,", *(spr + 7) + 'A');
-            printf("%c", *(spr + 8) + 'A');
         }
         if (i == 3)
         {
