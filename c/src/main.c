@@ -22,7 +22,16 @@ void moveParticule(PARTICULE *particule, CONTEXTE *contexte)
         bool retour = ptrParticule->Grower(ptrParticule);
         if (retour)
         {
-            ptrParticule = removeParticule(contexte, ptrParticule);
+            if (ptrParticule->explosive)
+            {
+                addParticule(contexte, 10, ptrParticule->x+ptrParticule->refX, ptrParticule->y+ptrParticule->refY);
+                //une particule ne peut exploquer qu'une seule fois
+                ptrParticule->explosive = false;
+            }
+            else
+            {
+                ptrParticule = removeParticule(contexte, ptrParticule);
+            }
         }
     }
 }
@@ -31,7 +40,7 @@ void mousePress(SDL_MouseButtonEvent *bE, CONTEXTE *contexte)
 {
     if (bE->button == SDL_BUTTON_LEFT)
     {
-        addParticule(contexte, bE->x, bE->y);
+        addParticule(contexte, 50, bE->x, bE->y);
     }
 }
 
@@ -55,8 +64,6 @@ void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
         switchLogo(contexte);
     }
 }
-
-
 
 int main(int argv, char *argc[])
 {
@@ -111,7 +118,7 @@ int main(int argv, char *argc[])
             afficherLogo(surface);
         }
         /* Recuperation du temps final en "clock ticks" */
-        
+
         if (contexte.drawBoard)
         {
             t2 = clock();
@@ -125,10 +132,9 @@ int main(int argv, char *argc[])
         //pour effacer
         if (!contexte.drawBlur)
         {
-            SDL_FillRect( surface, NULL, 0 );
+            SDL_FillRect(surface, NULL, 0);
         }
         SDL_DestroyTexture(texture);
-        
     }
 
     SDL_DestroyRenderer(sdlRenderer);

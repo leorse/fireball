@@ -24,7 +24,6 @@ void moveTour(PARTICULE *particule)
 
     particule->dX = (particule->x-oldX)*5;
     particule->dY = (particule->y-oldY)*5;
-    //printf("x:%5.5f,y:%5.5f - x:%5.5f,y:%5.5f -> x:%5.5f,y:%5.5f : x:%5.5f,y:%5.5f \n", particule->x,particule->y, oldX, oldY, particule->dX, particule->dY, particule->x-particule->dX, particule->y-particule->dY);
 }
 
 /**
@@ -58,9 +57,11 @@ void moveClassic(PARTICULE *particule)
 bool faireVivre(PARTICULE *particule)
 {
     particule->Mover(particule);
+    //if(particule->ephemere) printf("****");
+    //printf("x:%f, y:%f\n", particule->x, particule->y);
     if (particule->tps >= particule->vie)
     {
-        if(particule->ephemere)
+        if(particule->ephemere || particule->explosive)
         {
             return true;
         }
@@ -91,6 +92,7 @@ void ParticuleFactory(PARTICULE *particule)
     particule->dX = 0;
     particule->dY = 0;
     particule->ephemere = false;
+    particule->explosive = (rand() % 10) == 0;
 
     //déplacement simple ou en tour
     if (rand() % 2)
@@ -178,8 +180,6 @@ void afficheurTrainee(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
             }
         }
     }
-    
-    //drawline(0+ PTX, 0 + PTY, -this->dX+ PTX, -this->dY + PTY, 255, VScreen);
 }
 
 void drawline(int x0, int y0, int x1, int y1, int couleur, SDL_Surface *VScreen)
@@ -187,7 +187,6 @@ void drawline(int x0, int y0, int x1, int y1, int couleur, SDL_Surface *VScreen)
     int dx =  abs (x1 - x0), sx = x0 < x1 ? 1 : -1;
   int dy = -abs (y1 - y0), sy = y0 < y1 ? 1 : -1; 
   int err = dx + dy, e2; /* error value e_xy */
- //printf("ligne:x:%d, y%d, x:%d, y:%d\n", x0,  y0,  x1,  y1);
   for (;;){  /* loop */
     putPixel (x0,y0, couleur, VScreen);
     if (x0 == x1 && y0 == y1) break;

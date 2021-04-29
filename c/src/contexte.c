@@ -10,7 +10,7 @@ void initContexte(CONTEXTE *contexte)
     DoPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
     InitSprite(contexte->Sprites);
-    //à décomter pour afficher les sprites
+    //à décommenter pour afficher les sprites
     //drawSprite(contexte->Sprites);
 
     contexte->drawPalette = false;
@@ -19,16 +19,18 @@ void initContexte(CONTEXTE *contexte)
     contexte->drawLogo = true;
 }
 
-void addParticule(CONTEXTE *contexte, int x, int y)
+void addParticule(CONTEXTE *contexte, int nombre, int x, int y)
 {
     PARTICULE *ptr = NULL;
-    for (int i = 0; i < 50; i++)
+    //printf("creation particule:x:%d, y:%d\n", x, y);
+    for (int i = 0; i < nombre; i++)
     {
         ptr = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), contexte->dernier);
         ParticuleFactory(ptr);
-        ptr->refX = x;
-        ptr->refY = y;
+        ptr->refX = (float)x;
+        ptr->refY = (float)y;
         ptr->ephemere = true;
+        ptr->explosive = false;
         contexte->dernier = ptr;
         contexte->nombreMeteor++;
     }
