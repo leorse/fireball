@@ -12,7 +12,11 @@ void putPixel(int x, int y, int couleur, SDL_Surface *surface)
         return;
     }
     uint8_t *offscreen = (uint8_t *)surface->pixels;
-    offscreen[y * L + x] = couleur;
+    int offset = y * L + x;
+    if(offscreen[y * L + x]<couleur)
+    {
+        offscreen[y * L + x] = couleur;
+    }
 }
 
 void blur(int x1, int y1, int x2, int y2, SDL_Surface *surface)
