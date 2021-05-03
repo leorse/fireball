@@ -120,9 +120,8 @@ void afficherTexte(char *texte, CONTEXTE *contexte, SDL_Surface *surface, SDL_Re
     }
     else
     {
-        SDL_FillRect(surface, &rectDest, 0); //SDL_MapRGB( surface->format, 0, 0, 0 ) );
+        SDL_FillRect(surface, &rectDest, 0);
         SDL_BlitSurface(text_surface, NULL, surface, &rectDest);
-        //perhaps we can reuse it, but I assume not for simplicity.
         SDL_FreeSurface(text_surface);
     }
 }
@@ -146,7 +145,6 @@ void initialiserLumiere(CONTEXTE *contexte)
                 hauteur = 256 - (longueur * 256 / taille);
             }
             putPixel(x, y, hauteur, contexte->phongmap);
-            //printf("x:%d, y:%d, , dX:%f, dY:%f, longueur:%f, hauteur:%d\n", x, y, deltaX, deltaY, longueur, hauteur);
         }
     }
 }
@@ -163,36 +161,27 @@ void drawBumpMapping(CONTEXTE *contexte, int x, int y)
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
     uint8_t *phonglightmap = (uint8_t *)contexte->phongmap->pixels;
 
-    ly = -(y-TAILLE_LUMIERE/2);
-    for (incY = 1; incY < H-2; incY++)//1, H-2
+    ly = -(y - TAILLE_LUMIERE);
+    for (incY = 1; incY < H - 2; incY++)
     {
-        lx = -(x-TAILLE_LUMIERE/2);
-        for (incX = 0; incX < L; incX++, offset++)//0, L
+        lx = -(x - TAILLE_LUMIERE);
+        for (incX = 0; incX < L; incX++, offset++)
         {
-
-            /*xdelta = ((source[offset - 1] - source[offset + 1]) >> 1) + 127;
-            ydelta = ((source[offset - L] - source[offset + L]) >> 1) + 127;*/
-            xdelta = ((source[incY*L+(incX-1)] - source[incY*L+(incX)]));// >> 1) ;//+ 127;
-            ydelta = ((source[incY*L+incX] - source[(incY+1)*L+incX]));// >> 1);// + 127;
-            //printf("x:%d, x+1:%d,  y:%d, y+1:%d\n", source[incY*L+(incX-1)], source[incY*L+(incX)], source[incY*L+incX], source[(incY+1)*L+incX]);
-            //printf("incX:%d, incY:%d, xdelta:%d, ydelta:%d, off:%d, lx:%d, ly:%d\n", incX, incY, xdelta, ydelta, offset, lx, ly);
+            xdelta = ((source[incY * L + (incX - 1)] - source[incY * L + (incX)]) >> 1);
+            ydelta = ((source[incY * L + incX] - source[(incY + 1) * L + incX]) >> 1);
             lx++;
 
-            xtemp = xdelta+ lx;
-            ytemp = ydelta+ ly;
-            //printf("xt:%d, yt:%d\n", xtemp, ytemp);
-            if (xtemp<0 || xtemp>=L || ytemp<0 || ytemp>=H)//((xtemp & 0xFF00) || (ytemp & 0xFF00))
+            xtemp = xdelta + lx;
+            ytemp = ydelta + ly;
+            if (xtemp < 0 || xtemp >= L || ytemp < 0 || ytemp >= H)
             {
                 *dest++ = 0;
-                //printf("print 0\n");
-
             }
             else
             {
                 u = ytemp;
                 v = xtemp;
                 *dest++ = phonglightmap[v * L + u];
-                //printf("u:%d, v:%d, pm:%d\n", u,v,phonglightmap[v * L + u]);
             }
         }
         ly++;

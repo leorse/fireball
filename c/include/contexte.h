@@ -35,6 +35,7 @@ typedef struct
     SDL_Surface *surface;
     SDL_Surface *phongmap;
     SDL_Surface *bump;
+    SDL_Surface *cache;
 
     bool drawPalette;
     bool drawBoard;

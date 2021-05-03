@@ -10,11 +10,12 @@
 #include "initSDL.h"
 #include "affichage.h"
 
-void moveParticule(PARTICULE *particule, CONTEXTE *contexte)
+void moveParticule(CONTEXTE *contexte)
 {
     int i;
     float temps;
     PARTICULE *ptrParticule;
+    PARTICULE *particule = contexte->premier;
 
     i = 0;
     for (ptrParticule = particule; ptrParticule != NULL; ptrParticule = ptrParticule->suivant)
@@ -56,13 +57,11 @@ void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
     }
 }
 
-
-
 int main(int argv, char *argc[])
 {
 
     SDL_Event event;
-    
+
     SDL_Renderer *sdlRenderer;
     bool exitProgram = false;
     CONTEXTE contexte;
@@ -75,7 +74,7 @@ int main(int argv, char *argc[])
     initSDL(&contexte, &sdlRenderer);
 
     //initialiserLumiere(&contexte);
-//exitProgram=true;
+    //exitProgram=true;
     while (!exitProgram)
     {
         nbFrame++;
@@ -102,32 +101,34 @@ int main(int argv, char *argc[])
             {
                 mouseX = event.motion.x;
                 mouseY = event.motion.y;
-                printf("x:%d\n",mouseX);
             }
         }
-        
-            moveParticule(contexte.premier, &contexte);
-            drawParticule(contexte.bump, contexte.Sprites, contexte.premier);
-        
-            if (contexte.drawBlur)
-            {
-                blur(1, 1, L - 1, H - 1, contexte.bump);
-            }
-        if(contexte.mode == FIREBALL)
+
+        //l'affichage des particules se fait sur bump
+        moveParticule(&contexte);
+        drawParticule(contexte.bump, contexte.Sprites, contexte.premier);
+
+        if (contexte.drawBlur)
         {
-            if (contexte.drawPalette)
-            {
-                afficherPalette(contexte.surface);
-            }
-            /* Recuperation du temps final en "clock ticks" */
-            
-            if (contexte.drawBoard)
-            {
-                t2 = clock();
-                afficherBoard(&contexte, contexte.surface, t1, t2, nbFrame);
-            }
+            blur(1, 1, L - 1, H - 1, contexte.bump);
         }
-        if(contexte.mode == LIGHT)
+        if (contexte.mode == FIREBALL)
+        {
+            SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
+        }
+        if (contexte.drawPalette)
+        {
+            afficherPalette(contexte.surface);
+        }
+        /* Recuperation du temps final en "clock ticks" */
+
+        if (contexte.drawBoard)
+        {
+            t2 = clock();
+            afficherBoard(&contexte, contexte.surface, t1, t2, nbFrame);
+        }
+
+        if (contexte.mode == LIGHT)
         {
             drawBumpMapping(&contexte, mouseX, mouseY);
         }
@@ -139,10 +140,9 @@ int main(int argv, char *argc[])
         //pour effacer
         if (!contexte.drawBlur)
         {
-            SDL_FillRect( contexte.surface, NULL, 0 );
+            SDL_FillRect(contexte.surface, NULL, 0);
         }
         SDL_DestroyTexture(texture);
-        
     }
 
     SDL_DestroyRenderer(sdlRenderer);
