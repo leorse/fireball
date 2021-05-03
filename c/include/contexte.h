@@ -17,6 +17,12 @@
 #define PTX (L / 2)
 #define PTY (H / 2)
 
+enum MODE_EFFECT
+{
+    FIREBALL,
+    LIGHT
+};
+
 typedef struct
 {
     PARTICULE *premier;
@@ -26,10 +32,16 @@ typedef struct
     SDL_Color listeCouleur[256];
     TTF_Font *font;
 
+    SDL_Surface *surface;
+    SDL_Surface *phongmap;
+    SDL_Surface *bump;
+    SDL_Surface *cache;
+
     bool drawPalette;
     bool drawBoard;
     bool drawBlur;
     bool drawLogo;
+    enum MODE_EFFECT mode;
 
 } CONTEXTE;
 
@@ -48,4 +60,5 @@ void switchPalette(CONTEXTE* );
 void switchBlur(CONTEXTE* );
 void switchBoard(CONTEXTE* );
 void switchLogo(CONTEXTE* );
+void switchMode(CONTEXTE* contexte);
 

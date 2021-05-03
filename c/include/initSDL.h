@@ -8,6 +8,6 @@
 #include "contexte.h"
 
 
-bool initSDL(CONTEXTE* , SDL_Surface **, SDL_Renderer **);
+bool initSDL(CONTEXTE* , SDL_Renderer **);
 
 //#endif
