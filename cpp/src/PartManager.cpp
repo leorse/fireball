@@ -74,6 +74,6 @@ void PartManager::drawParticules()
     {
         //Particule& particule = it;
         auto particule = it->get();
-        this->drawer.afficheurSimple(particule);
+        this->drawer.afficheurTrainee(particule);
     }
 }
