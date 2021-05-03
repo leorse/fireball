@@ -10,6 +10,14 @@ void putPixel(int x, int y, int couleur, SDL_Surface *surface)
     {
         return;
     }
+    if (couleur < 0)
+    {
+        couleur = 0;
+    }
+    if (couleur > 255)
+    {
+        couleur = 255;
+    }
     uint8_t *offscreen = (uint8_t *)surface->pixels;
     offscreen[y * L + x] = couleur;
 }
@@ -55,7 +63,7 @@ void afficherPalette(SDL_Surface *VScreen)
     }
 }
 
-char* calculerInfosTimer(char* texte, clock_t t1, clock_t t2, long nbFrame)
+char *calculerInfosTimer(char *texte, clock_t t1, clock_t t2, long nbFrame)
 {
     long clk_tck = CLOCKS_PER_SEC;
 
@@ -64,7 +72,7 @@ char* calculerInfosTimer(char* texte, clock_t t1, clock_t t2, long nbFrame)
     double tickMin, tickMax = 0;
 
     double tick = (double)(t2 - t1) / (double)clk_tck;
-    double fps = (t2 - t1)==0?1000:1000/((double)(t2 - t1)*1000 / (double)clk_tck);
+    double fps = (t2 - t1) == 0 ? 1000 : 1000 / ((double)(t2 - t1) * 1000 / (double)clk_tck);
     if (nbFrame == 100)
     {
         cumul = 0;
@@ -82,29 +90,28 @@ char* calculerInfosTimer(char* texte, clock_t t1, clock_t t2, long nbFrame)
         tickMin = tick;
     }
     sprintf(texte, "FPS : %ld, moyenne: %lf", (long)fps, moyenne);
-
 }
 
 void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface, clock_t t1, clock_t t2, long nbFrame)
 {
     char texte[100];
-    SDL_Rect dstRect = {100, 0 ,50, 200};
+    SDL_Rect dstRect = {100, 0, 50, 200};
 
     sprintf(texte, "Nombre Particule:%d", contexte->nombreMeteor);
-    
+
     afficherTexte(texte, contexte, surface, dstRect);
     calculerInfosTimer(texte, t1, t2, nbFrame);
     dstRect.y = 25;
     afficherTexte(texte, contexte, surface, dstRect);
 }
 
-void afficherTexte(char* texte, CONTEXTE* contexte, SDL_Surface *surface, SDL_Rect rectDest)
+void afficherTexte(char *texte, CONTEXTE *contexte, SDL_Surface *surface, SDL_Rect rectDest)
 {
     SDL_Color color = {255, 255, 255};
     SDL_Surface *text_surface;
 
-    int w,h;
-    TTF_SizeUTF8(contexte->font,texte,&w,&h);
+    int w, h;
+    TTF_SizeUTF8(contexte->font, texte, &w, &h);
     rectDest.w = w;
     rectDest.h = h;
     if (!(text_surface = TTF_RenderUTF8_Solid(contexte->font, texte, color)))
@@ -113,9 +120,70 @@ void afficherTexte(char* texte, CONTEXTE* contexte, SDL_Surface *surface, SDL_Re
     }
     else
     {
-        SDL_FillRect( surface, &rectDest, 0);//SDL_MapRGB( surface->format, 0, 0, 0 ) );
+        SDL_FillRect(surface, &rectDest, 0);
         SDL_BlitSurface(text_surface, NULL, surface, &rectDest);
-        //perhaps we can reuse it, but I assume not for simplicity.
         SDL_FreeSurface(text_surface);
+    }
+}
+
+void initialiserLumiere(CONTEXTE *contexte)
+{
+    int taille = TAILLE_LUMIERE;
+    //printf("L:%d, H:%d\n", L,H);
+    for (int x = 0; x < L; x++)
+    {
+        float deltaX = (L / 2) - x;
+        float longX = deltaX * deltaX;
+        for (int y = 0; y < H; y++)
+        {
+            float deltaY = (H / 2) - y;
+            float longY = deltaY * deltaY;
+            float longueur = sqrt(longX + longY);
+            int hauteur = 0;
+            if (longueur <= taille)
+            {
+                hauteur = 256 - (longueur * 256 / taille);
+            }
+            putPixel(x, y, hauteur, contexte->phongmap);
+        }
+    }
+}
+
+void drawBumpMapping(CONTEXTE *contexte, int x, int y)
+{
+    int xdist, ydist;
+    int xdelta, ydelta;
+    int xtemp, ytemp, temp;
+    int incY, incX, offset = L;
+    int lx, ly;
+    unsigned int u, v;
+    uint8_t *source = (uint8_t *)contexte->bump->pixels;
+    uint8_t *dest = (uint8_t *)contexte->surface->pixels;
+    uint8_t *phonglightmap = (uint8_t *)contexte->phongmap->pixels;
+
+    ly = -(y - TAILLE_LUMIERE);
+    for (incY = 1; incY < H - 2; incY++)
+    {
+        lx = -(x - TAILLE_LUMIERE);
+        for (incX = 0; incX < L; incX++, offset++)
+        {
+            xdelta = ((source[incY * L + (incX - 1)] - source[incY * L + (incX)]) >> 1);
+            ydelta = ((source[incY * L + incX] - source[(incY + 1) * L + incX]) >> 1);
+            lx++;
+
+            xtemp = xdelta + lx;
+            ytemp = ydelta + ly;
+            if (xtemp < 0 || xtemp >= L || ytemp < 0 || ytemp >= H)
+            {
+                *dest++ = 0;
+            }
+            else
+            {
+                u = ytemp;
+                v = xtemp;
+                *dest++ = phonglightmap[v * L + u];
+            }
+        }
+        ly++;
     }
 }

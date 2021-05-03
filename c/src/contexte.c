@@ -2,7 +2,7 @@
 #include "contexte.h"
 #include "particule.h"
 #include "initSDL.h"
-//#include "affichage.h"
+#include "affichage.h"
 
 void initContexte(CONTEXTE *contexte)
 {
@@ -15,6 +15,7 @@ void initContexte(CONTEXTE *contexte)
     contexte->drawPalette = false;
     contexte->drawBoard = false;
     contexte->drawBlur = true;
+    contexte->mode = FIREBALL;
 }
 
 void addParticule(CONTEXTE *contexte, int x, int y)
@@ -83,6 +84,9 @@ void detruireContexte(CONTEXTE *contexte)
 {
     __CT_libererElements(contexte->premier);
     TTF_CloseFont(contexte->font);
+    SDL_FreeSurface(contexte->surface);
+    SDL_FreeSurface(contexte->bump);
+    SDL_FreeSurface(contexte->phongmap);
 }
 
 void DoPalette(SDL_Color *Palette)
@@ -252,4 +256,19 @@ void switchBoard(CONTEXTE *contexte)
 void switchBlur(CONTEXTE *contexte)
 {
     contexte->drawBlur = !contexte->drawBlur;
+}
+
+void switchMode(CONTEXTE* contexte)
+{
+    if(contexte->mode == FIREBALL)
+    {
+        initialiserLumiere(contexte);
+        SDL_BlitSurface(contexte->surface, NULL, contexte->bump, NULL);
+        contexte->mode = LIGHT;
+        //drawBumpMapping(contexte);
+    }
+    else if(contexte->mode == LIGHT)
+    {
+        contexte->mode = FIREBALL;
+    }
 }
