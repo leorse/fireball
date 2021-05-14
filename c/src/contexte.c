@@ -228,6 +228,7 @@ void switchMode(CONTEXTE *contexte)
     else if (contexte->mode == LIGHT)
     {
         //copier le cache
+        afficherLogoCenter(contexte->cache);
         contexte->mode = SHADOW;
     }
     else if (contexte->mode == SHADOW)

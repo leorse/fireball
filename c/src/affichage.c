@@ -5,7 +5,7 @@
 #include "contexte.h"
 #include "logo.h"
 
-void putPixel(int x, int y, int couleur, SDL_Surface *surface)
+void putPixel(int x, int y, int couleur, bool force, SDL_Surface *surface)
 {
     if (x < 1 || y < 1 || x >= L - 1 || y >= H - 1)
     {
@@ -21,7 +21,7 @@ void putPixel(int x, int y, int couleur, SDL_Surface *surface)
     }
     uint8_t *offscreen = (uint8_t *)surface->pixels;
     int offset = y * L + x;
-    if (offscreen[y * L + x] < couleur)
+    if (force || offscreen[y * L + x] < couleur)
     {
         offscreen[y * L + x] = couleur;
     }
@@ -75,7 +75,7 @@ void afficherLogo(int x, int y, SDL_Surface *VScreen)
         {
             if (c_logo_map[incY * LOGO_W + incX] != 0x00)
             {
-                putPixel(incX + x, incY + y, 255, VScreen);
+                putPixel(incX + x, incY + y, 255, false, VScreen);
             }
         }
     }
@@ -87,7 +87,7 @@ void afficherPalette(SDL_Surface *VScreen)
     {
         for (int incY = 0; incY < H; incY++)
         {
-            putPixel(incX, incY, incY * 256 / H, VScreen);
+            putPixel(incX, incY, incY * 256 / H, false, VScreen);
         }
     }
 }
@@ -173,7 +173,51 @@ void initialiserLumiere(CONTEXTE *contexte)
             {
                 hauteur = 256 - (longueur * 256 / taille);
             }
-            putPixel(x, y, hauteur, contexte->phongmap);
+            putPixel(x, y, hauteur, false, contexte->phongmap);
+        }
+    }
+}
+
+void drawShadow(CONTEXTE *contexte, int x, int y)
+{
+    float hauteurLumiereCache = 5;
+    float hauteurCache = 5;
+    int hauteurLumiere = hauteurCache + hauteurLumiereCache;
+    float rapportHauteur = hauteurLumiereCache / hauteurLumiere;
+    int posX, posY;
+    uint8_t *cache = (uint8_t *)contexte->cache->pixels;
+    uint8_t *dest = (uint8_t *)contexte->surface->pixels;
+
+    bool afficher = true;
+
+    for (int incX = 0; incX < L; incX++)
+    {
+        float diffX = x - incX;
+        float longX = x - incX;
+        float longXCache = longX * rapportHauteur;
+        posX = x - longXCache;
+        for (int incY = 0; incY < H; incY++)
+        {
+            float diffY = y - incY;
+            float longY = y - incY;
+            float longYCache = longY * rapportHauteur;
+            posY = y - longYCache;
+            if (cache[incY * L + incX] != 0x00)
+            {
+                putPixel(incX, incY, 255, true, contexte->surface);
+            }
+            else
+            {
+                if (cache[posY * L + posX] != 0x00)
+                {
+                    putPixel(incX, incY, 0, true, contexte->surface);
+                }
+            }
+            if (!afficher)
+            {
+                printf("x:%d, y:%d, longX:%f, longY:%f, longXCache:%f, longYCahce:%f, posX:%d, posY:%d\n", x, y, longX, longY, longXCache, longYCache, posX, posY);
+                afficher = true;
+            }
         }
     }
 }

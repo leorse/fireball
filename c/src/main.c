@@ -10,7 +10,6 @@
 #include "initSDL.h"
 #include "affichage.h"
 
-
 void moveParticule(CONTEXTE *contexte)
 {
     int i;
@@ -26,7 +25,7 @@ void moveParticule(CONTEXTE *contexte)
         {
             if (ptrParticule->explosive)
             {
-                addParticule(contexte, 10, ptrParticule->x+ptrParticule->refX, ptrParticule->y+ptrParticule->refY);
+                addParticule(contexte, 10, ptrParticule->x + ptrParticule->refX, ptrParticule->y + ptrParticule->refY);
                 //une particule ne peut exploquer qu'une seule fois
                 ptrParticule->explosive = false;
             }
@@ -126,18 +125,20 @@ int main(int argv, char *argc[])
         {
             blur(1, 1, L - 1, H - 1, contexte.bump);
         }
+        if (contexte.drawLogo)
+        {
+            afficherLogoTopRight(contexte.bump);
+        }
         if (contexte.mode == FIREBALL)
         {
             SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
         }
+
         if (contexte.drawPalette)
         {
             afficherPalette(contexte.surface);
         }
-        if (contexte.drawLogo)
-        {
-            afficherLogoTopRight(contexte.surface);
-        }
+
         /* Recuperation du temps final en "clock ticks" */
 
         if (contexte.drawBoard)
@@ -149,6 +150,12 @@ int main(int argv, char *argc[])
         if (contexte.mode == LIGHT)
         {
             drawBumpMapping(&contexte, mouseX, mouseY);
+        }
+        if (contexte.mode == SHADOW)
+        {
+            //SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
+            drawBumpMapping(&contexte, mouseX, mouseY);
+            drawShadow(&contexte, mouseX, mouseY);
         }
 
         SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, contexte.surface);

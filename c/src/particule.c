@@ -131,7 +131,7 @@ void afficheurSimple(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
 
     if (taille == 1)
     {
-        putPixel(posX, posY, couleur, VScreen);
+        putPixel(posX, posY, couleur, false, VScreen);
     }
     else
     {
@@ -142,7 +142,7 @@ void afficheurSimple(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
             {
                 if (*(sprite + ((incX * taille) + incY)) == true)
                 {
-                    putPixel(posX + incX, posY + incY, couleur, VScreen);
+                    putPixel(posX + incX, posY + incY, couleur, false, VScreen);
                     drawline(posX + incX, posY + incY, this->dX+ this->refX + incX, this->dY+ this->refY + incY, 255, VScreen);
                     
                 }
@@ -162,7 +162,7 @@ void afficheurTrainee(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
 
     if (taille == 1)
     {
-        putPixel(posX, posY, couleur, VScreen);
+        putPixel(posX, posY, couleur, false, VScreen);
         drawline(posX, posY, posX-this->dX, posY-this->dY, 255, VScreen);
     }
     else
@@ -174,7 +174,7 @@ void afficheurTrainee(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
             {
                 if (*(sprite + ((incX * taille) + incY)) == true)
                 {
-                    putPixel(posX + incX, posY + incY, couleur, VScreen);
+                    putPixel(posX + incX, posY + incY, couleur, false, VScreen);
                     drawline(posX + incX, posY+ incY, posX-this->dX + incX, posY-this->dY+ incY, couleur, VScreen);
                 }
             }
@@ -188,7 +188,7 @@ void drawline(int x0, int y0, int x1, int y1, int couleur, SDL_Surface *VScreen)
   int dy = -abs (y1 - y0), sy = y0 < y1 ? 1 : -1; 
   int err = dx + dy, e2; /* error value e_xy */
   for (;;){  /* loop */
-    putPixel (x0,y0, couleur, VScreen);
+    putPixel (x0,y0, couleur, false, VScreen);
     if (x0 == x1 && y0 == y1) break;
     e2 = 2 * err;
     if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
