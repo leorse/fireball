@@ -10,7 +10,7 @@ void initContexte(CONTEXTE *contexte)
     DoPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
     InitSprite(contexte->Sprites);
-    //à décommenter pour afficher les sprites
+    //ï¿½ dï¿½commenter pour afficher les sprites
     //drawSprite(contexte->Sprites);
 
     contexte->drawPalette = false;
@@ -91,6 +91,7 @@ void detruireContexte(CONTEXTE *contexte)
     SDL_FreeSurface(contexte->surface);
     SDL_FreeSurface(contexte->bump);
     SDL_FreeSurface(contexte->phongmap);
+    SDL_FreeSurface(contexte->cache);
 }
 
 void DoPalette(SDL_Color *Palette)
@@ -215,17 +216,23 @@ void switchLogo(CONTEXTE *contexte)
     contexte->drawLogo = !contexte->drawLogo;
 }
 
-void switchMode(CONTEXTE* contexte)
+void switchMode(CONTEXTE *contexte)
 {
-    if(contexte->mode == FIREBALL)
+    if (contexte->mode == FIREBALL)
     {
         initialiserLumiere(contexte);
         SDL_BlitSurface(contexte->surface, NULL, contexte->bump, NULL);
         contexte->mode = LIGHT;
         //drawBumpMapping(contexte);
     }
-    else if(contexte->mode == LIGHT)
+    else if (contexte->mode == LIGHT)
     {
+        //copier le cache
+        contexte->mode = SHADOW;
+    }
+    else if (contexte->mode == SHADOW)
+    {
+
         contexte->mode = FIREBALL;
     }
 }

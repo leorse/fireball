@@ -20,7 +20,8 @@
 enum MODE_EFFECT
 {
     FIREBALL,
-    LIGHT
+    LIGHT,
+    SHADOW
 };
 
 typedef struct

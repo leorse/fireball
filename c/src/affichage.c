@@ -57,7 +57,17 @@ void drawParticule(SDL_Surface *VScreen, bool *Sprites[MAX_TAILLE], PARTICULE *p
     }
 }
 
-void afficherLogo(SDL_Surface *VScreen)
+void afficherLogoTopRight(SDL_Surface *VScreen)
+{
+    afficherLogo(L-LOGO_W, 0, VScreen);
+}
+
+void afficherLogoCenter(SDL_Surface *VScreen)
+{
+    afficherLogo((L/2)-(LOGO_W/2), (H/2)-(LOGO_H/2), VScreen);
+}
+
+void afficherLogo(int x, int y, SDL_Surface *VScreen)
 {
     for (int incX = 0; incX < LOGO_W; incX++)
     {
@@ -65,7 +75,7 @@ void afficherLogo(SDL_Surface *VScreen)
         {
             if(c_logo_map[incY*LOGO_W+incX] != 0x00)
             {
-                putPixel(L-LOGO_W+incX, incY, 255, VScreen);
+                putPixel(incX+x, incY+y, 255, VScreen);
             }
             
         }

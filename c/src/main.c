@@ -10,6 +10,7 @@
 #include "initSDL.h"
 #include "affichage.h"
 
+
 void moveParticule(CONTEXTE *contexte)
 {
     int i;
@@ -135,7 +136,7 @@ int main(int argv, char *argc[])
         }
         if (contexte.drawLogo)
         {
-            afficherLogo(contexte.surface);
+            afficherLogoTopRight(contexte.surface);
         }
         /* Recuperation du temps final en "clock ticks" */
 
