@@ -21,7 +21,7 @@ void putPixel(int x, int y, int couleur, SDL_Surface *surface)
     }
     uint8_t *offscreen = (uint8_t *)surface->pixels;
     int offset = y * L + x;
-    if(offscreen[y * L + x]<couleur)
+    if (offscreen[y * L + x] < couleur)
     {
         offscreen[y * L + x] = couleur;
     }
@@ -59,12 +59,12 @@ void drawParticule(SDL_Surface *VScreen, bool *Sprites[MAX_TAILLE], PARTICULE *p
 
 void afficherLogoTopRight(SDL_Surface *VScreen)
 {
-    afficherLogo(L-LOGO_W, 0, VScreen);
+    afficherLogo(L - LOGO_W, 0, VScreen);
 }
 
 void afficherLogoCenter(SDL_Surface *VScreen)
 {
-    afficherLogo((L/2)-(LOGO_W/2), (H/2)-(LOGO_H/2), VScreen);
+    afficherLogo((L / 2) - (LOGO_W / 2), (H / 2) - (LOGO_H / 2), VScreen);
 }
 
 void afficherLogo(int x, int y, SDL_Surface *VScreen)
@@ -73,11 +73,10 @@ void afficherLogo(int x, int y, SDL_Surface *VScreen)
     {
         for (int incY = 0; incY < LOGO_H; incY++)
         {
-            if(c_logo_map[incY*LOGO_W+incX] != 0x00)
+            if (c_logo_map[incY * LOGO_W + incX] != 0x00)
             {
-                putPixel(incX+x, incY+y, 255, VScreen);
+                putPixel(incX + x, incY + y, 255, VScreen);
             }
-            
         }
     }
 }
@@ -197,8 +196,8 @@ void drawBumpMapping(CONTEXTE *contexte, int x, int y)
         lx = -(x - TAILLE_LUMIERE);
         for (incX = 0; incX < L; incX++, offset++)
         {
-            xdelta = ((source[incY * L + (incX - 1)] - source[incY * L + (incX)]) >> 1);
-            ydelta = ((source[incY * L + incX] - source[(incY + 1) * L + incX]) >> 1);
+            xdelta = ((source[incY * L + (incX - 1)] - source[incY * L + (incX)]));
+            ydelta = ((source[incY * L + incX] - source[(incY + 1) * L + incX]));
             lx++;
 
             xtemp = xdelta + lx;
