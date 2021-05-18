@@ -50,8 +50,8 @@ typedef struct
 void initContexte(CONTEXTE *);
 void detruireContexte(CONTEXTE *contexte);
 PARTICULE *initElmt(CONTEXTE* contexte);
-void DoPalette(SDL_Color *Palette);
-void InitSprite(bool *Sprites[]);
+void doPalette(SDL_Color *Palette);
+void initSprite(bool *Sprites[]);
 void drawSprite(bool *Sprites[]);
 void addParticule(CONTEXTE *contexte, int nombre, int x, int y);
 PARTICULE* removeParticule(CONTEXTE* contexte, PARTICULE* particule);

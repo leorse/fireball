@@ -7,9 +7,9 @@
 void initContexte(CONTEXTE *contexte)
 {
     contexte->nombreMeteor = 0;
-    DoPalette(contexte->listeCouleur);
+    doPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
-    InitSprite(contexte->Sprites);
+    initSprite(contexte->Sprites);
     //� d�commenter pour afficher les sprites
     //drawSprite(contexte->Sprites);
 
@@ -94,7 +94,7 @@ void detruireContexte(CONTEXTE *contexte)
     SDL_FreeSurface(contexte->cache);
 }
 
-void DoPalette(SDL_Color *Palette)
+void doPalette(SDL_Color *Palette)
 {
     int i;
     for (i = 0; i < 128; i++)
@@ -113,7 +113,7 @@ void DoPalette(SDL_Color *Palette)
     Palette[255].g = 255;
     Palette[255].b = 255;
 }
-void InitSprite(bool *Sprites[MAX_TAILLE])
+void initSprite(bool *Sprites[MAX_TAILLE])
 {
     for (int i = 0; i < MAX_TAILLE; i++)
     {
