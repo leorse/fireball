@@ -24,6 +24,6 @@ char *calculerInfosTimer(char *texte, clock_t t1, clock_t t2, long nbFrame);
 void initialiserLumiere(CONTEXTE *contexte);
 
 void drawBumpMapping(CONTEXTE *contexte, int x, int y);
-void drawShadow(CONTEXTE *contexte, int x, int y);
+void drawShadow(CONTEXTE *contexte, int x, int y, int offset);
 
 //#endif

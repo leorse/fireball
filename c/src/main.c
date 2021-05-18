@@ -149,13 +149,13 @@ int main(int argv, char *argc[])
 
         if (contexte.mode == LIGHT)
         {
-            drawBumpMapping(&contexte, mouseX, mouseY);
+            doModeLight(&contexte, mouseX, mouseY);
         }
         if (contexte.mode == SHADOW)
         {
             //SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
-            drawBumpMapping(&contexte, mouseX, mouseY);
-            drawShadow(&contexte, mouseX, mouseY);
+            
+            doModeShadow(&contexte, mouseX, mouseY);
         }
 
         SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, contexte.surface);

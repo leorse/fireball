@@ -113,6 +113,18 @@ void doPalette(SDL_Color *Palette)
     Palette[255].g = 255;
     Palette[255].b = 255;
 }
+
+void doPaletteOffset(SDL_Color *Palette, int offset)
+{
+    doPalette(Palette);
+    for (int i = 0; i < 256; i++)
+    {
+        Palette[i].r = Palette[i].r - offset < 0 ? 0 : Palette[i].r - offset;
+        Palette[i].g = Palette[i].g - offset < 0 ? 0 : Palette[i].g - offset;
+        Palette[i].b = Palette[i].b - offset < 0 ? 0 : Palette[i].b - offset;
+    }
+}
+
 void initSprite(bool *Sprites[MAX_TAILLE])
 {
     for (int i = 0; i < MAX_TAILLE; i++)
@@ -174,6 +186,22 @@ void initSprite(bool *Sprites[MAX_TAILLE])
             memcpy(sprite, tabSprite, sizeof(tabSprite));
         }
     }
+}
+
+void doModeLight(CONTEXTE *contexte, int x, int y)
+{
+    doPaletteOffset(contexte->listeCouleur, rand() % 20 );
+    SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
+    drawBumpMapping(contexte, x, y);
+}
+
+void doModeShadow(CONTEXTE *contexte, int x, int y)
+{
+    int offset = rand() % 20 +1;
+    doPaletteOffset(contexte->listeCouleur, offset);
+    SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
+    drawBumpMapping(contexte, x, y);
+    drawShadow(contexte, x, y, offset);
 }
 
 void drawSprite(bool *Sprites[MAX_TAILLE])

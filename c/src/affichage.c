@@ -178,7 +178,7 @@ void initialiserLumiere(CONTEXTE *contexte)
     }
 }
 
-void drawShadow(CONTEXTE *contexte, int x, int y)
+void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
 {
     float hauteurLumiereCache = 5;
     float hauteurCache = 5;
@@ -195,13 +195,13 @@ void drawShadow(CONTEXTE *contexte, int x, int y)
         float diffX = x - incX;
         float longX = x - incX;
         float longXCache = longX * rapportHauteur;
-        posX = x - longXCache;
+        posX = x - longXCache - 2/(float)offset;
         for (int incY = 0; incY < H; incY++)
         {
             float diffY = y - incY;
             float longY = y - incY;
             float longYCache = longY * rapportHauteur;
-            posY = y - longYCache;
+            posY = y - longYCache - 2/(float)offset;
             if (cache[incY * L + incX] != 0x00)
             {
                 putPixel(incX, incY, 255, true, contexte->surface);

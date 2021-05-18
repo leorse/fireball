@@ -56,6 +56,9 @@ void drawSprite(bool *Sprites[]);
 void addParticule(CONTEXTE *contexte, int nombre, int x, int y);
 PARTICULE* removeParticule(CONTEXTE* contexte, PARTICULE* particule);
 
+void doModeLight(CONTEXTE *contexte, int x, int y);
+void doModeShadow(CONTEXTE *contexte, int x, int y);
+
 //GUI
 void switchPalette(CONTEXTE* );
 void switchBlur(CONTEXTE* );
