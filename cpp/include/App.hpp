@@ -1,22 +1,19 @@
 #pragma once
 
-#include <list>
 
-#include "Particule.hpp"
 
-class Contexte
+#include "PartManager.hpp"
+
+class App
 {
 private:
     bool programAlive;
+    PartManager partManager;
+    std::default_random_engine re;
 
 public:
     static const int HAUTEUR = 1000;
     static const int LARGEUR = 1000;
-    static const int NB_PARTICULE = 1;
-
-    std::list<Particule*> particules;
-
-    Particule* factoryParticule();
 
     bool isProgramAlive();
     void stopProgram();
@@ -24,6 +21,6 @@ public:
     void growParticules();
     void drawParticules();
 
-    Contexte();
-    ~Contexte();
+    App();
+    ~App();
 };

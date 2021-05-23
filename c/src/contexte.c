@@ -7,27 +7,31 @@
 void initContexte(CONTEXTE *contexte)
 {
     contexte->nombreMeteor = 0;
-    DoPalette(contexte->listeCouleur);
+    doPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
-    InitSprite(contexte->Sprites);
-    drawSprite(contexte->Sprites);
+    initSprite(contexte->Sprites);
+    //� d�commenter pour afficher les sprites
+    //drawSprite(contexte->Sprites);
 
     contexte->drawPalette = false;
     contexte->drawBoard = false;
     contexte->drawBlur = true;
+    contexte->drawLogo = true;
     contexte->mode = FIREBALL;
 }
 
-void addParticule(CONTEXTE *contexte, int x, int y)
+void addParticule(CONTEXTE *contexte, int nombre, int x, int y)
 {
     PARTICULE *ptr = NULL;
-    for (int i = 0; i < 50; i++)
+    //printf("creation particule:x:%d, y:%d\n", x, y);
+    for (int i = 0; i < nombre; i++)
     {
         ptr = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), contexte->dernier);
         ParticuleFactory(ptr);
-        ptr->refX = x;
-        ptr->refY = y;
+        ptr->refX = (float)x;
+        ptr->refY = (float)y;
         ptr->ephemere = true;
+        ptr->explosive = false;
         contexte->dernier = ptr;
         contexte->nombreMeteor++;
     }
@@ -87,9 +91,10 @@ void detruireContexte(CONTEXTE *contexte)
     SDL_FreeSurface(contexte->surface);
     SDL_FreeSurface(contexte->bump);
     SDL_FreeSurface(contexte->phongmap);
+    SDL_FreeSurface(contexte->cache);
 }
 
-void DoPalette(SDL_Color *Palette)
+void doPalette(SDL_Color *Palette)
 {
     int i;
     for (i = 0; i < 128; i++)
@@ -108,28 +113,30 @@ void DoPalette(SDL_Color *Palette)
     Palette[255].g = 255;
     Palette[255].b = 255;
 }
-void InitSprite(bool *Sprites[MAX_TAILLE])
+
+void doPaletteOffset(SDL_Color *Palette, int offset)
+{
+    doPalette(Palette);
+    for (int i = 0; i < 256; i++)
+    {
+        Palette[i].r = Palette[i].r - offset < 0 ? 0 : Palette[i].r - offset;
+        Palette[i].g = Palette[i].g - offset < 0 ? 0 : Palette[i].g - offset;
+        Palette[i].b = Palette[i].b - offset < 0 ? 0 : Palette[i].b - offset;
+    }
+}
+
+void initSprite(bool *Sprites[MAX_TAILLE])
 {
     for (int i = 0; i < MAX_TAILLE; i++)
     {
         int taille = (i + 1) * (i + 1);
         Sprites[i] = (bool *)malloc(taille * sizeof(bool));
-        //printf("ici, taille:%d, sp=%p", taille, Sprites[i] );
         bool *sprite = Sprites[i];
-        /*char tabSprite[MAX_TAILLE][MAX_TAILLE] =
-            {
-                {0, 0, 1, 0, 0},
-                {0, 1, 1, 1, 0},
-                {1, 1, 1, 1, 1},
-                {0, 1, 1, 1, 0},
-                {0, 0, 1, 0, 0},
-            };*/
         //|1|
         if (i == 0)
         {
             sprite[0] = true;
         }
-        //|11|
         //|11|
         if (i == 1)
         {
@@ -137,16 +144,6 @@ void InitSprite(bool *Sprites[MAX_TAILLE])
                 {{true, false},
                  {false, true}};
             memcpy(sprite, tabSprite, sizeof(tabSprite));
-            printf("ts\n");
-            printf("%c,", tabSprite[0][0] + 'A');
-            printf("%c\n", tabSprite[1][0] + 'A');
-            printf("%c,", tabSprite[0][1] + 'A');
-            printf("%c,", tabSprite[1][1] + 'A');
-            printf("s\n");
-            printf("%c,", sprite[0] + 'A');
-            printf("%c\n", sprite[1] + 'A');
-            printf("%c,", sprite[2] + 'A');
-            printf("%c,", sprite[3] + 'A');
         }
         if (i == 2)
         {
@@ -157,38 +154,6 @@ void InitSprite(bool *Sprites[MAX_TAILLE])
                     {false, true, false},
                 };
             memcpy(sprite, tabSprite, sizeof(tabSprite));
-            printf("ts\n");
-            printf("%c,", tabSprite[0][0] + 'A');
-            printf("%c,", tabSprite[1][0] + 'A');
-            printf("%c\n", tabSprite[2][0] + 'A');
-            printf("%c,", tabSprite[0][1] + 'A');
-            printf("%c,", tabSprite[1][1] + 'A');
-            printf("%c\n", tabSprite[2][1] + 'A');
-            printf("%c,", tabSprite[0][2] + 'A');
-            printf("%c,", tabSprite[1][2] + 'A');
-            printf("%c\n", tabSprite[2][2] + 'A');
-            printf("s\n");
-            printf("%c,", sprite[0] + 'A');
-            printf("%c,", sprite[1] + 'A');
-            printf("%c\n,", sprite[2] + 'A');
-            printf("%c,", sprite[3] + 'A');
-            printf("%c,", sprite[4] + 'A');
-            printf("%c\n,", sprite[5] + 'A');
-            printf("%c,", sprite[6] + 'A');
-            printf("%c,", sprite[7] + 'A');
-            printf("%c", sprite[8] + 'A');
-            printf("S\n");
-            bool *spr = Sprites[2];
-            //printf("S %p s %p", &Sprites[2], &spr);
-            printf("%c,", *(spr + 0) + 'A');
-            printf("%c,", *(spr + 1) + 'A');
-            printf("%c\n,", *(spr + 2) + 'A');
-            printf("%c,", *(spr + 3) + 'A');
-            printf("%c,", *(spr + 4) + 'A');
-            printf("%c\n,", *(spr + 5) + 'A');
-            printf("%c,", *(spr + 6) + 'A');
-            printf("%c,", *(spr + 7) + 'A');
-            printf("%c", *(spr + 8) + 'A');
         }
         if (i == 3)
         {
@@ -221,6 +186,22 @@ void InitSprite(bool *Sprites[MAX_TAILLE])
             memcpy(sprite, tabSprite, sizeof(tabSprite));
         }
     }
+}
+
+void doModeLight(CONTEXTE *contexte, int x, int y)
+{
+    doPaletteOffset(contexte->listeCouleur, rand() % 20 );
+    SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
+    drawBumpMapping(contexte, x, y);
+}
+
+void doModeShadow(CONTEXTE *contexte, int x, int y)
+{
+    int offset = rand() % 20 +1;
+    doPaletteOffset(contexte->listeCouleur, offset);
+    SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
+    drawBumpMapping(contexte, x, y);
+    drawShadow(contexte, x, y, offset);
 }
 
 void drawSprite(bool *Sprites[MAX_TAILLE])
@@ -258,17 +239,29 @@ void switchBlur(CONTEXTE *contexte)
     contexte->drawBlur = !contexte->drawBlur;
 }
 
-void switchMode(CONTEXTE* contexte)
+void switchLogo(CONTEXTE *contexte)
 {
-    if(contexte->mode == FIREBALL)
+    contexte->drawLogo = !contexte->drawLogo;
+}
+
+void switchMode(CONTEXTE *contexte)
+{
+    if (contexte->mode == FIREBALL)
     {
         initialiserLumiere(contexte);
         SDL_BlitSurface(contexte->surface, NULL, contexte->bump, NULL);
         contexte->mode = LIGHT;
         //drawBumpMapping(contexte);
     }
-    else if(contexte->mode == LIGHT)
+    else if (contexte->mode == LIGHT)
     {
+        //copier le cache
+        afficherLogoCenter(contexte->cache);
+        contexte->mode = SHADOW;
+    }
+    else if (contexte->mode == SHADOW)
+    {
+
         contexte->mode = FIREBALL;
     }
 }

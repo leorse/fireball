@@ -1,9 +1,12 @@
 #pragma once
 
+#include <random>
+
 enum class TypeParticule
 {
     FIREBALL = 0,
-    COMET = 1
+    COMET = 1,
+    NONE = 2
 };
 
 class Particule
@@ -26,69 +29,101 @@ protected:
 
     float refX, refY;
 
+    std::default_random_engine re;
+
 public:
     static const int MAX_VITESSE = 45;
-    static const int MAX_TAILLE = 6;
+    static const int MAX_TAILLE = 5;
     static const int MAX_DUREE = 25;
 
-    float
-    GetX() const;
-    void SetX(float x);
+    void setSeed(std::default_random_engine);
+
+    float getX() const;
+
+    void setX(float x);
 
     TypeParticule getType() const;
+
     void setType(TypeParticule);
 
-    float GetY() const;
-    void SetY(float y);
+    float getY() const;
 
-    float GetTps() const;
-    void SetTps(float tps);
+    void setY(float y);
 
-    float GetDir() const;
-    void SetDir(float dir);
+    float getTps() const;
 
-    float GetPoids() const;
-    void SetPoids(float poids);
+    void setTps(float tps);
 
-    int GetVitesse() const;
-    void SetVitesse(int vitesse);
+    float getDir() const;
 
-    int GetTaille() const;
-    void SetTaille(int taille);
+    void setDir(float dir);
 
-    int GetVie() const;
-    void SetVie(int vie);
+    float getPoids() const;
 
-    double GetDX() const;
-    void SetDX(double dX);
+    void setPoids(float poids);
 
-    double GetDY() const;
-    void SetDY(double dY);
+    int getVitesse() const;
 
-    bool GetEphemere() const;
-    void SetEphemere(bool ephemere);
+    void setVitesse(int vitesse);
 
-    float GetRefX() const;
-    void SetRefX(float refX);
+    int getTaille() const;
+
+    void setTaille(int taille);
+
+    int getVie() const;
+
+    void setVie(int vie);
+
+    double getDX() const;
+
+    void setDX(double dX);
+
+    double getDY() const;
+
+    void setDY(double dY);
+
+    bool getEphemere() const;
+
+    void setEphemere(bool ephemere);
+
+    float getRefX() const;
+
+    void setRefX(float refX);
+
+    float getRefY() const;
+
+    void setRefY(float refY);
 
     bool isAlive();
 
     void initLife(bool);
 
-    virtual void grow(void){};
-    virtual void move(void){};
+    virtual void grow(void)
+    {
+    };
+
+    virtual void move(void)
+    {
+    };
+
+    void quisuisJe(void);
 
     Particule();
-    ~Particule(){};
+
+    virtual ~Particule();
 };
 
 class Comet : public Particule
 {
 public:
-    Comet();
+    Comet(std::default_random_engine);
+
     ~Comet();
 
+    void quisuisJe(void);
+
     void grow(void);
+
     void move(void);
 };
 /*

@@ -23,7 +23,16 @@ void moveParticule(CONTEXTE *contexte)
         bool retour = ptrParticule->Grower(ptrParticule);
         if (retour)
         {
-            ptrParticule = removeParticule(contexte, ptrParticule);
+            if (ptrParticule->explosive)
+            {
+                addParticule(contexte, 10, ptrParticule->x + ptrParticule->refX, ptrParticule->y + ptrParticule->refY);
+                //une particule ne peut exploquer qu'une seule fois
+                ptrParticule->explosive = false;
+            }
+            else
+            {
+                ptrParticule = removeParticule(contexte, ptrParticule);
+            }
         }
     }
 }
@@ -32,7 +41,7 @@ void mousePress(SDL_MouseButtonEvent *bE, CONTEXTE *contexte)
 {
     if (bE->button == SDL_BUTTON_LEFT)
     {
-        addParticule(contexte, bE->x, bE->y);
+        addParticule(contexte, 50, bE->x, bE->y);
     }
 }
 
@@ -50,6 +59,10 @@ void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
     if (kE->keysym.scancode == SDL_SCANCODE_F)
     {
         switchBlur(contexte);
+    }
+    if (kE->keysym.scancode == SDL_SCANCODE_L)
+    {
+        switchLogo(contexte);
     }
     if (kE->keysym.scancode == SDL_SCANCODE_M)
     {
@@ -112,14 +125,20 @@ int main(int argv, char *argc[])
         {
             blur(1, 1, L - 1, H - 1, contexte.bump);
         }
+        if (contexte.drawLogo)
+        {
+            afficherLogoTopRight(contexte.bump);
+        }
         if (contexte.mode == FIREBALL)
         {
             SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
         }
+
         if (contexte.drawPalette)
         {
             afficherPalette(contexte.surface);
         }
+
         /* Recuperation du temps final en "clock ticks" */
 
         if (contexte.drawBoard)
@@ -130,7 +149,13 @@ int main(int argv, char *argc[])
 
         if (contexte.mode == LIGHT)
         {
-            drawBumpMapping(&contexte, mouseX, mouseY);
+            doModeLight(&contexte, mouseX, mouseY);
+        }
+        if (contexte.mode == SHADOW)
+        {
+            //SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
+            
+            doModeShadow(&contexte, mouseX, mouseY);
         }
 
         SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, contexte.surface);

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include "SDLManagment.hpp"
-#include "Contexte.hpp"
+#include "App.hpp"
 
 using namespace std;
 
@@ -12,28 +12,30 @@ int main(int argc, char *argv[])
     {
 
         SDLManagment sdlManagment;
-        Contexte contexte;
+        App app;
 
-        while (contexte.isProgramAlive())
+        while (app.isProgramAlive())
         {
             while (SDL_PollEvent(&event))
             {
                 if (event.type == SDL_QUIT)
                 {
-                    contexte.stopProgram();
+                    app.stopProgram();
                     break;
                 }
 
                 if (event.type == SDL_MOUSEBUTTONDOWN)
                 {
-                    //mousePress(&event.button, &contexte);
+                    //mousePress(&event.button, &app);
                 }
                 if (event.type == SDL_KEYUP)
                 {
-                    //keyPress(&event.key, &contexte);
+                    //keyPress(&event.key, &app);
                 }
             }
-            contexte.growParticules();
+            app.growParticules();
+
+            sdlManagment.render();
         }
     }
     catch (string ex)

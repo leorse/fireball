@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 #include "SDLManagment.hpp"
-#include "Contexte.hpp"
+#include "App.hpp"
 using namespace std;
 
 SDL_Renderer* SDLManagment::sdlRenderer;
@@ -44,13 +44,13 @@ SDLManagment::SDLManagment()
         exit(EXIT_FAILURE);
     }
 
-    if ((this->sdlWindow = SDL_CreateWindow("ma fenêtre", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Contexte::LARGEUR, Contexte::HAUTEUR, SDL_WINDOW_OPENGL)) == NULL)
+    if ((this->sdlWindow = SDL_CreateWindow("ma fenêtre", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, App::LARGEUR, App::HAUTEUR, SDL_WINDOW_OPENGL)) == NULL)
     {
         throw "Erreur à la création dela fenêtre";
     }
 
     SDLManagment::sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
-    SDLManagment::surface = SDL_CreateRGBSurface(SDL_SWSURFACE, Contexte::LARGEUR, Contexte::HAUTEUR, 8, 0, 0, 0, 0);
+    SDLManagment::surface = SDL_CreateRGBSurface(SDL_SWSURFACE, App::LARGEUR, App::HAUTEUR, 8, 0, 0, 0, 0);
     this->initPalette();
     SDL_SetPaletteColors(SDLManagment::surface->format->palette, this->palette, 0, 256);
 }
@@ -59,4 +59,19 @@ SDLManagment::~SDLManagment()
 {
     SDL_DestroyWindow(this->sdlWindow);
     SDL_Quit();
+}
+
+void SDLManagment::render(void)
+{
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, surface);
+        SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
+
+        SDL_RenderPresent(sdlRenderer);
+        //pour effacer
+        /*if (!contexte.drawBlur)
+        {
+            SDL_FillRect( surface, NULL, 0 );
+        }*/
+        SDL_FillRect( surface, NULL, 0 );
+        SDL_DestroyTexture(texture);
 }

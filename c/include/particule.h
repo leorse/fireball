@@ -30,6 +30,8 @@ typedef struct _PARTICULE
 
     bool ephemere;
 
+    bool explosive;
+
     float refX, refY;
 
     bool (*Grower)(struct _PARTICULE *);
