@@ -21,9 +21,9 @@ void putPixel(int x, int y, int couleur, bool force, SDL_Surface *surface)
     }
     uint8_t *offscreen = (uint8_t *)surface->pixels;
     int offset = y * L + x;
-    if (force || offscreen[y * L + x] < couleur)
+    if (force || offscreen[offset] < couleur)
     {
-        offscreen[y * L + x] = couleur;
+        offscreen[offset] = couleur;
     }
 }
 
@@ -31,19 +31,21 @@ void blur(int x1, int y1, int x2, int y2, SDL_Surface *surface)
 {
     int x, y;
     int resultat;
+    int offsetY = 0;
 
     uint8_t *VScreen = (uint8_t *)surface->pixels;
     for (x = x1; x < x2; x++)
     {
         for (y = y1; y < y2; y++)
         {
+            offsetY = y * L;
             resultat =
-                VScreen[(y - 1) * L + x] +
-                VScreen[(y + 1) * L + x] +
-                VScreen[y * L + (x + 1)] +
-                VScreen[y * L + (x - 1)];
+                VScreen[offsetY - L + x] +
+                VScreen[offsetY + L + x] +
+                VScreen[offsetY + (x + 1)] +
+                VScreen[offsetY + (x - 1)];
             resultat = resultat / 4;
-            VScreen[y * L + x] = resultat;
+            VScreen[offsetY + x] = resultat;
         }
     }
 }
@@ -185,24 +187,25 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
     int hauteurLumiere = hauteurCache + hauteurLumiereCache;
     float rapportHauteur = hauteurLumiereCache / hauteurLumiere;
     int posX, posY;
+    int offsetY = 0;
     uint8_t *cache = (uint8_t *)contexte->cache->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
 
-    bool afficher = true;
-
     for (int incX = 0; incX < L; incX++)
     {
-        float diffX = x - incX;
+        //float diffX = x - incX;
         float longX = x - incX;
         float longXCache = longX * rapportHauteur;
-        posX = x - longXCache - 2/(float)offset;
+        posX = x - longXCache - 2 / (float)offset;
+        offsetY = 0;
         for (int incY = 0; incY < H; incY++)
         {
-            float diffY = y - incY;
+            //float diffY = y - incY;
             float longY = y - incY;
             float longYCache = longY * rapportHauteur;
-            posY = y - longYCache - 2/(float)offset;
-            if (cache[incY * L + incX] != 0x00)
+            posY = y - longYCache - 2 / (float)offset;
+
+            if (cache[offsetY + incX] != 0x00)
             {
                 putPixel(incX, incY, 255, true, contexte->surface);
             }
@@ -213,11 +216,7 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
                     putPixel(incX, incY, 0, true, contexte->surface);
                 }
             }
-            if (!afficher)
-            {
-                printf("x:%d, y:%d, longX:%f, longY:%f, longXCache:%f, longYCahce:%f, posX:%d, posY:%d\n", x, y, longX, longY, longXCache, longYCache, posX, posY);
-                afficher = true;
-            }
+            offsetY += L;
         }
     }
 }
@@ -230,6 +229,7 @@ void drawBumpMapping(CONTEXTE *contexte, int x, int y)
     int incY, incX, offset = L;
     int lx, ly;
     unsigned int u, v;
+    int offsetY = 0;
     uint8_t *source = (uint8_t *)contexte->bump->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
     uint8_t *phonglightmap = (uint8_t *)contexte->phongmap->pixels;
@@ -238,10 +238,11 @@ void drawBumpMapping(CONTEXTE *contexte, int x, int y)
     for (incY = 1; incY < H - 2; incY++)
     {
         lx = -(x - TAILLE_LUMIERE);
+        offsetY = incY * L;
         for (incX = 0; incX < L; incX++, offset++)
         {
-            xdelta = ((source[incY * L + (incX - 1)] - source[incY * L + (incX)]));
-            ydelta = ((source[incY * L + incX] - source[(incY + 1) * L + incX]));
+            xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + (incX)]));
+            ydelta = ((source[offsetY + incX] - source[offsetY + L + incX]));
             lx++;
 
             xtemp = xdelta + lx;
