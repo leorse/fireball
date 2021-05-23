@@ -191,33 +191,34 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
     uint8_t *cache = (uint8_t *)contexte->cache->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
 
-    for (int incX = 0; incX < L; incX++)
+    for (int incY = 0; incY < H; incY++)
     {
-        //float diffX = x - incX;
-        float longX = x - incX;
-        float longXCache = longX * rapportHauteur;
-        posX = x - longXCache - 2 / (float)offset;
-        offsetY = 0;
-        for (int incY = 0; incY < H; incY++)
+        float longY = y - incY;
+        float longYCache = longY * rapportHauteur;
+        posY = y - longYCache - 2 / (float)offset;
+
+        for (int incX = 0; incX < L; incX++)
         {
-            //float diffY = y - incY;
-            float longY = y - incY;
-            float longYCache = longY * rapportHauteur;
-            posY = y - longYCache - 2 / (float)offset;
+            float longX = x - incX;
+            float longXCache = longX * rapportHauteur;
+            posX = x - longXCache - 2 / (float)offset;
 
             if (cache[offsetY + incX] != 0x00)
             {
-                putPixel(incX, incY, 255, true, contexte->surface);
+                *dest = 255;
             }
             else
             {
-                if (cache[posY * L + posX] != 0x00)
+                int offsetCache = posY * L + posX;
+                if (offsetCache >= 0 && cache[offsetCache] != 0x00)
                 {
-                    putPixel(incX, incY, 0, true, contexte->surface);
+                    *dest = 0;
                 }
             }
-            offsetY += L;
+
+            dest++;
         }
+        offsetY += L;
     }
 }
 
