@@ -160,7 +160,6 @@ void afficherTexte(char *texte, CONTEXTE *contexte, SDL_Surface *surface, SDL_Re
 void initialiserLumiere(CONTEXTE *contexte)
 {
     int taille = TAILLE_LUMIERE;
-    //printf("L:%d, H:%d\n", L,H);
     for (int x = 0; x < L; x++)
     {
         float deltaX = (L / 2) - x;
@@ -182,12 +181,14 @@ void initialiserLumiere(CONTEXTE *contexte)
 
 void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
 {
-    float hauteurLumiereCache = 5;
+    float calcOffset = 1 / (float)offset;
+    float hauteurLumiereCache = 5-calcOffset/4;
     float hauteurCache = 5;
-    int hauteurLumiere = hauteurCache + hauteurLumiereCache;
+    float hauteurLumiere = hauteurCache + hauteurLumiereCache;
     float rapportHauteur = hauteurLumiereCache / hauteurLumiere;
     int posX, posY;
     int offsetY = 0;
+    
     uint8_t *cache = (uint8_t *)contexte->cache->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
 
@@ -195,13 +196,13 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
     {
         float longY = y - incY;
         float longYCache = longY * rapportHauteur;
-        posY = y - longYCache - 2 / (float)offset;
+        posY = y - longYCache - calcOffset;
 
         for (int incX = 0; incX < L; incX++)
         {
             float longX = x - incX;
             float longXCache = longX * rapportHauteur;
-            posX = x - longXCache - 2 / (float)offset;
+            posX = x - longXCache - calcOffset;
 
             if (cache[offsetY + incX] != 0x00)
             {
@@ -212,7 +213,16 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
                 int offsetCache = posY * L + posX;
                 if (offsetCache >= 0 && cache[offsetCache] != 0x00)
                 {
-                    *dest = 0;
+                    uint8_t couleur = *dest;
+                    if (couleur < 150)
+                    {
+                        couleur = 0;
+                    }
+                    else
+                    {
+                        couleur -= 150;
+                    }
+                    *dest = couleur;
                 }
             }
 
@@ -236,10 +246,11 @@ void drawBumpMapping(CONTEXTE *contexte, int x, int y)
     uint8_t *phonglightmap = (uint8_t *)contexte->phongmap->pixels;
 
     ly = -(y - TAILLE_LUMIERE);
+    offsetY = L;
     for (incY = 1; incY < H - 2; incY++)
     {
         lx = -(x - TAILLE_LUMIERE);
-        offsetY = incY * L;
+
         for (incX = 0; incX < L; incX++, offset++)
         {
             xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + (incX)]));
@@ -259,6 +270,7 @@ void drawBumpMapping(CONTEXTE *contexte, int x, int y)
                 *dest++ = phonglightmap[v * L + u];
             }
         }
+        offsetY += L;
         ly++;
     }
 }

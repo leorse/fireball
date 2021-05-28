@@ -11,19 +11,19 @@ void moveTour(PARTICULE *particule)
 {
     float oldX = particule->x;
     float oldY = particule->y;
-    if(particule->tps==0)
+    if (particule->tps == 0)
     {
         oldX = 0;
         oldY = 0;
     }
     particule->tps += 0.1;
     float temps = particule->tps;
-    
+
     particule->x = (double)(particule->vitesse * temps * cos((particule->dir + temps * 10) * PI / 180));
     particule->y = (double)(particule->vitesse * temps * sin((particule->dir - temps * 10) * PI / 180) - (particule->poids / 2) * (temps * temps));
 
-    particule->dX = (particule->x-oldX)*5;
-    particule->dY = (particule->y-oldY)*5;
+    particule->dX = (particule->x - oldX) * 5;
+    particule->dY = (particule->y - oldY) * 5;
 }
 
 /**
@@ -35,7 +35,7 @@ void moveClassic(PARTICULE *particule)
 {
     float oldX = particule->x;
     float oldY = particule->y;
-    if(particule->tps==0)
+    if (particule->tps == 0)
     {
         oldX = 0;
         oldY = 0;
@@ -57,11 +57,9 @@ void moveClassic(PARTICULE *particule)
 bool faireVivre(PARTICULE *particule)
 {
     particule->Mover(particule);
-    //if(particule->ephemere) printf("****");
-    //printf("x:%f, y:%f\n", particule->x, particule->y);
     if (particule->tps >= particule->vie)
     {
-        if(particule->ephemere || particule->explosive)
+        if (particule->ephemere || particule->explosive)
         {
             return true;
         }
@@ -143,13 +141,12 @@ void afficheurSimple(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
                 if (*(sprite + ((incX * taille) + incY)) == true)
                 {
                     putPixel(posX + incX, posY + incY, couleur, false, VScreen);
-                    drawline(posX + incX, posY + incY, this->dX+ this->refX + incX, this->dY+ this->refY + incY, 255, VScreen);
-                    
+                    drawline(posX + incX, posY + incY, this->dX + this->refX + incX, this->dY + this->refY + incY, 255, VScreen);
                 }
             }
         }
     }
-    drawline(posX, posY, this->dX+ this->refX, this->dY+ this->refY, 255, VScreen);
+    drawline(posX, posY, this->dX + this->refX, this->dY + this->refY, 255, VScreen);
 }
 
 void afficheurTrainee(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
@@ -163,7 +160,7 @@ void afficheurTrainee(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
     if (taille == 1)
     {
         putPixel(posX, posY, couleur, false, VScreen);
-        drawline(posX, posY, posX-this->dX, posY-this->dY, 255, VScreen);
+        drawline(posX, posY, posX - this->dX, posY - this->dY, 255, VScreen);
     }
     else
     {
@@ -175,7 +172,7 @@ void afficheurTrainee(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
                 if (*(sprite + ((incX * taille) + incY)) == true)
                 {
                     putPixel(posX + incX, posY + incY, couleur, false, VScreen);
-                    drawline(posX + incX, posY+ incY, posX-this->dX + incX, posY-this->dY+ incY, couleur, VScreen);
+                    drawline(posX + incX, posY + incY, posX - this->dX + incX, posY - this->dY + incY, couleur, VScreen);
                 }
             }
         }
@@ -184,15 +181,24 @@ void afficheurTrainee(PARTICULE *this, SDL_Surface *VScreen, bool *Sprites[])
 
 void drawline(int x0, int y0, int x1, int y1, int couleur, SDL_Surface *VScreen)
 {
-    int dx =  abs (x1 - x0), sx = x0 < x1 ? 1 : -1;
-  int dy = -abs (y1 - y0), sy = y0 < y1 ? 1 : -1; 
-  int err = dx + dy, e2; /* error value e_xy */
-  for (;;){  /* loop */
-    putPixel (x0,y0, couleur, false, VScreen);
-    if (x0 == x1 && y0 == y1) break;
-    e2 = 2 * err;
-    if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
-    if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
-  }
-    
+    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy, e2; /* error value e_xy */
+    for (;;)
+    { /* loop */
+        putPixel(x0, y0, couleur, false, VScreen);
+        if (x0 == x1 && y0 == y1)
+            break;
+        e2 = 2 * err;
+        if (e2 >= dy)
+        {
+            err += dy;
+            x0 += sx;
+        } /* e_xy+e_x > 0 */
+        if (e2 <= dx)
+        {
+            err += dx;
+            y0 += sy;
+        } /* e_xy+e_y < 0 */
+    }
 }
