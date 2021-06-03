@@ -2,67 +2,25 @@
 A fireball in different language based on my very old code (1998) first done in C on DOS.
 Still in 256 colors in SDL2.
 
-## Class Diagram
+## Le mode de couleur
+Pour permettre les différents effets de ce programme, il faut utiliser une palette de 256 couleurs en dégradé. Chaque couleur étant indexée de 0 à 255.
 
-```mermaid
-classDiagram
-    METEOR<|--FireBall
-    METEOR<|--Comet
-    METEOR*--Contexte
-    class METEOR {
-        METEOR* suivant
-        METEOR* precedent
-        int x
-        int y
-        double dY
-        double dX
-        double vie
-        double tps
-        bool ephemere
+![](ressources/palette.png)
 
-        InitMeteor()
-        MeteorFactory()$
-        Drawer()*
-        Mover()*
-    }
+![](ressources/paletteIndex.png)
 
-    class FireBall {
+## Fireball mode
+Ce mode est un système de particule avec un effet de flou pour donner cet effet de feu.
 
-    }
-    class Comet{
-        
-    }
+![](ressources/fireballMode.gif)
 
-    class Draw {
-        blur()
-        drawSprite(METOR*)
-    }
+### Déplacement des particules
+### Effet de flou
 
-    class Contexte {
-        METEOR* premier
-        METEOR* dernier
-        SDL_Color palette
-        drawPalette
-        drawBoard
-        drawBlur
-        addParticule()
-        removeParticule
-    }
+## Bump mode
+![](ressources/bumpMode.gif)
 
-    class SDLManagment {
-        SDLManagment()
-        ~SDLManagment()
-        pollEvent()
-    }
-```
+## Shadow mode
+![](ressources/shadowMode.gif)
 
-
-## C
-Basiqualiy the same code that I've done in 1998.
-
-### Compile on windows
-Use the make file
-```
-mingw32-make.exe
-```
 
