@@ -7,10 +7,10 @@
 void initContexte(CONTEXTE *contexte)
 {
     contexte->nombreMeteor = 0;
-    DoPalette(contexte->listeCouleur);
+    doPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
-    InitSprite(contexte->Sprites);
-    //à décommenter pour afficher les sprites
+    initSprite(contexte->Sprites);
+    //ï¿½ dï¿½commenter pour afficher les sprites
     //drawSprite(contexte->Sprites);
 
     contexte->drawPalette = false;
@@ -91,9 +91,10 @@ void detruireContexte(CONTEXTE *contexte)
     SDL_FreeSurface(contexte->surface);
     SDL_FreeSurface(contexte->bump);
     SDL_FreeSurface(contexte->phongmap);
+    SDL_FreeSurface(contexte->cache);
 }
 
-void DoPalette(SDL_Color *Palette)
+void doPalette(SDL_Color *Palette)
 {
     int i;
     for (i = 0; i < 128; i++)
@@ -112,7 +113,19 @@ void DoPalette(SDL_Color *Palette)
     Palette[255].g = 255;
     Palette[255].b = 255;
 }
-void InitSprite(bool *Sprites[MAX_TAILLE])
+
+void doPaletteOffset(SDL_Color *Palette, int offset)
+{
+    doPalette(Palette);
+    for (int i = 0; i < 256; i++)
+    {
+        Palette[i].r = Palette[i].r - offset < 0 ? 0 : Palette[i].r - offset;
+        Palette[i].g = Palette[i].g - offset < 0 ? 0 : Palette[i].g - offset;
+        Palette[i].b = Palette[i].b - offset < 0 ? 0 : Palette[i].b - offset;
+    }
+}
+
+void initSprite(bool *Sprites[MAX_TAILLE])
 {
     for (int i = 0; i < MAX_TAILLE; i++)
     {
@@ -175,6 +188,22 @@ void InitSprite(bool *Sprites[MAX_TAILLE])
     }
 }
 
+void doModeLight(CONTEXTE *contexte, int x, int y)
+{
+    doPaletteOffset(contexte->listeCouleur, rand() % 20 );
+    SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
+    drawBumpMapping(contexte, x, y);
+}
+
+void doModeShadow(CONTEXTE *contexte, int x, int y)
+{
+    int offset = rand() % 20 +1;
+    doPaletteOffset(contexte->listeCouleur, offset);
+    SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
+    drawBumpMapping(contexte, x, y);
+    drawShadow(contexte, x, y, offset);
+}
+
 void drawSprite(bool *Sprites[MAX_TAILLE])
 {
     for (int inc = 0; inc < MAX_TAILLE; inc++)
@@ -215,17 +244,24 @@ void switchLogo(CONTEXTE *contexte)
     contexte->drawLogo = !contexte->drawLogo;
 }
 
-void switchMode(CONTEXTE* contexte)
+void switchMode(CONTEXTE *contexte)
 {
-    if(contexte->mode == FIREBALL)
+    if (contexte->mode == FIREBALL)
     {
         initialiserLumiere(contexte);
         SDL_BlitSurface(contexte->surface, NULL, contexte->bump, NULL);
         contexte->mode = LIGHT;
         //drawBumpMapping(contexte);
     }
-    else if(contexte->mode == LIGHT)
+    else if (contexte->mode == LIGHT)
     {
+        //copier le cache
+        afficherLogoCenter(contexte->cache);
+        contexte->mode = SHADOW;
+    }
+    else if (contexte->mode == SHADOW)
+    {
+
         contexte->mode = FIREBALL;
     }
 }
