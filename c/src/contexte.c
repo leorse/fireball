@@ -190,18 +190,25 @@ void initSprite(bool *Sprites[MAX_TAILLE])
 
 void doModeLight(CONTEXTE *contexte, int x, int y)
 {
-    doPaletteOffset(contexte->listeCouleur, rand() % 20 );
+    doPaletteOffset(contexte->listeCouleur, rand() % 20);
     SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
     drawBumpMapping(contexte, x, y);
 }
 
 void doModeShadow(CONTEXTE *contexte, int x, int y)
 {
-    int offset = rand() % 20 +1;
+    int offset = rand() % 20 + 1;
     doPaletteOffset(contexte->listeCouleur, offset);
     SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
     drawBumpMapping(contexte, x, y);
     drawShadow(contexte, x, y, offset);
+}
+
+void doModeGlass(CONTEXTE *contexte)
+{
+    doPalette(contexte->listeCouleur);
+    SDL_SetPaletteColors((contexte->surface)->format->palette, contexte->listeCouleur, 0, 256);
+    drawGlass(contexte);
 }
 
 void drawSprite(bool *Sprites[MAX_TAILLE])
@@ -261,7 +268,11 @@ void switchMode(CONTEXTE *contexte)
     }
     else if (contexte->mode == SHADOW)
     {
-
+        contexte->mode = GLASS;
+        afficherLogoTile(contexte->cache);
+    }
+    else if (contexte->mode == GLASS)
+    {
         contexte->mode = FIREBALL;
     }
 }

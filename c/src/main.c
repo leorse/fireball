@@ -152,11 +152,12 @@ int main(int argv, char *argc[])
         }
         if (contexte.mode == SHADOW)
         {
-            //SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
-            
             doModeShadow(&contexte, mouseX, mouseY);
         }
-
+        if (contexte.mode == GLASS)
+        {
+            doModeGlass(&contexte);
+        }
         SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, contexte.surface);
         SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
 

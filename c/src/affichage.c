@@ -64,8 +64,24 @@ void afficherLogoTopRight(SDL_Surface *VScreen)
     afficherLogo(L - LOGO_W, 0, VScreen);
 }
 
+void afficherLogoTile(SDL_Surface *VScreen)
+{
+    int nbX = L/LOGO_W +1;
+    int nbY = H/LOGO_H +1;
+
+    SDL_FillRect(VScreen, NULL, 0);
+    for(int incX =0;incX<nbX;incX++)
+    {
+        for(int incY=0;incY<nbY;incY++)
+        {
+            afficherLogo(incX*LOGO_W+incX*10, incY*LOGO_H+incY*10, VScreen);
+        }
+    }
+}
+
 void afficherLogoCenter(SDL_Surface *VScreen)
 {
+    SDL_FillRect(VScreen, NULL, 0);
     afficherLogo((L / 2) - (LOGO_W / 2), (H / 2) - (LOGO_H / 2), VScreen);
 }
 
@@ -272,5 +288,43 @@ void drawBumpMapping(CONTEXTE *contexte, int x, int y)
         }
         offsetY += L;
         ly++;
+    }
+}
+
+void drawGlass(CONTEXTE *contexte)
+{
+    int xdist, ydist;
+    int xdelta, ydelta;
+    int xtemp, ytemp, temp;
+    int incY, incX, offset = L;
+
+    unsigned int u, v;
+    int offsetY = 0;
+    uint8_t *source = (uint8_t *)contexte->bump->pixels;
+    uint8_t *dest = (uint8_t *)contexte->surface->pixels;
+    uint8_t *cache = (uint8_t *)contexte->cache->pixels;
+
+    offsetY = L;
+    for (incY = 1; incY < H - 2; incY++)
+    {
+        for (incX = 0; incX < L; incX++, offset++)
+        {
+            xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + (incX)]));
+            ydelta = ((source[offsetY + incX] - source[offsetY + L + incX]));
+
+            xtemp = incX-xdelta;
+            ytemp = incY-ydelta;
+            if (xtemp < 0 || xtemp >= L || ytemp < 0 || ytemp >= H)
+            {
+                *dest++ = 0;
+            }
+            else
+            {
+                u = ytemp;
+                v = xtemp;
+                *dest++ = cache[ytemp * L + xtemp];
+            }
+        }
+        offsetY += L;
     }
 }

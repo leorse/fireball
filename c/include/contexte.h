@@ -21,7 +21,8 @@ enum MODE_EFFECT
 {
     FIREBALL,
     LIGHT,
-    SHADOW
+    SHADOW,
+    GLASS
 };
 
 typedef struct
@@ -58,6 +59,7 @@ PARTICULE* removeParticule(CONTEXTE* contexte, PARTICULE* particule);
 
 void doModeLight(CONTEXTE *contexte, int x, int y);
 void doModeShadow(CONTEXTE *contexte, int x, int y);
+void doModeGlass(CONTEXTE *contexte);
 
 //GUI
 void switchPalette(CONTEXTE* );

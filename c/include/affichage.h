@@ -18,6 +18,7 @@ void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface, clock_t t1, clock_t
 
 void afficherLogoTopRight(SDL_Surface *VScreen);
 void afficherLogoCenter(SDL_Surface *VScreen);
+void afficherLogoTile(SDL_Surface *VScreen);
 void afficherLogo(int x, int y, SDL_Surface *VScreen);
 
 char *calculerInfosTimer(char *texte, clock_t t1, clock_t t2, long nbFrame);
@@ -25,5 +26,5 @@ void initialiserLumiere(CONTEXTE *contexte);
 
 void drawBumpMapping(CONTEXTE *contexte, int x, int y);
 void drawShadow(CONTEXTE *contexte, int x, int y, int offset);
-
+void drawGlass(CONTEXTE *contexte);
 //#endif
