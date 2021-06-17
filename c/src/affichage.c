@@ -66,15 +66,15 @@ void afficherLogoTopRight(SDL_Surface *VScreen)
 
 void afficherLogoTile(SDL_Surface *VScreen)
 {
-    int nbX = L/LOGO_W +1;
-    int nbY = H/LOGO_H +1;
+    int nbX = L / LOGO_W + 1;
+    int nbY = H / LOGO_H + 1;
 
     SDL_FillRect(VScreen, NULL, 0);
-    for(int incX =0;incX<nbX;incX++)
+    for (int incX = 0; incX < nbX; incX++)
     {
-        for(int incY=0;incY<nbY;incY++)
+        for (int incY = 0; incY < nbY; incY++)
         {
-            afficherLogo(incX*LOGO_W+incX*10, incY*LOGO_H+incY*10, VScreen);
+            afficherLogo(incX * LOGO_W + incX * 10, incY * LOGO_H + incY * 10, VScreen);
         }
     }
 }
@@ -198,13 +198,13 @@ void initialiserLumiere(CONTEXTE *contexte)
 void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
 {
     float calcOffset = 1 / (float)offset;
-    float hauteurLumiereCache = 5-calcOffset/4;
+    float hauteurLumiereCache = 5 - calcOffset / 4;
     float hauteurCache = 5;
     float hauteurLumiere = hauteurCache + hauteurLumiereCache;
     float rapportHauteur = hauteurLumiereCache / hauteurLumiere;
     int posX, posY;
     int offsetY = 0;
-    
+
     uint8_t *cache = (uint8_t *)contexte->cache->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
 
@@ -229,15 +229,25 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
                 int offsetCache = posY * L + posX;
                 if (offsetCache >= 0 && cache[offsetCache] != 0x00)
                 {
+                    uint8_t couleurCache = cache[offsetCache];
+                    if (couleurCache < 100)
+                    {
+                        couleurCache = 0;
+                    }
+                    else
+                    {
+                        couleurCache -= 100;
+                    }
                     uint8_t couleur = *dest;
-                    if (couleur < 150)
+                    if (couleurCache > couleur)
                     {
                         couleur = 0;
                     }
                     else
                     {
-                        couleur -= 150;
+                        couleur = couleur - couleurCache;
                     }
+
                     *dest = couleur;
                 }
             }
@@ -312,8 +322,8 @@ void drawGlass(CONTEXTE *contexte)
             xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + (incX)]));
             ydelta = ((source[offsetY + incX] - source[offsetY + L + incX]));
 
-            xtemp = incX-xdelta;
-            ytemp = incY-ydelta;
+            xtemp = incX - xdelta;
+            ytemp = incY - ydelta;
             if (xtemp < 0 || xtemp >= L || ytemp < 0 || ytemp >= H)
             {
                 *dest++ = 0;

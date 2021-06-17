@@ -16,7 +16,7 @@ void initContexte(CONTEXTE *contexte)
     contexte->drawPalette = false;
     contexte->drawBoard = false;
     contexte->drawBlur = true;
-    contexte->drawLogo = true;
+    contexte->drawLogo = false;
     contexte->mode = FIREBALL;
 }
 
@@ -264,6 +264,9 @@ void switchMode(CONTEXTE *contexte)
     {
         //copier le cache
         afficherLogoCenter(contexte->cache);
+        blur(1, 1, L - 1, H - 1, contexte->cache);
+        blur(1, 1, L - 1, H - 1, contexte->cache);
+        blur(1, 1, L - 1, H - 1, contexte->cache);
         contexte->mode = SHADOW;
     }
     else if (contexte->mode == SHADOW)
