@@ -57,6 +57,8 @@ void moveClassic(PARTICULE *particule)
 bool faireVivre(PARTICULE *particule)
 {
     particule->Mover(particule);
+    //if(particule->ephemere) printf("****");
+    //printf("x:%f, y:%f\n", particule->x, particule->y);
     if (particule->tps >= particule->vie)
     {
         if (particule->ephemere || particule->explosive)
