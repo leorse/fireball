@@ -48,4 +48,5 @@ La formule est la suivante:
 ## Shadow mode
 ![](ressources/shadowMode.gif)
 
-
+## Glass mode
+![](ressources/glassMode.gif)
