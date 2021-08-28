@@ -27,7 +27,7 @@ ifeq ($(OS),Windows_NT)
 else
 	LINKER_FLAGS += -lm
 endif
-LINKER_FLAGS += -lSDL2_ttf -lSDL2main -lSDL2 
+LINKER_FLAGS += -lSDL2_ttf -lSDL2main -lSDL2  -fopenmp
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = ./output/fireballC

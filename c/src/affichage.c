@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <omp.h>
 
 #include "affichage.h"
 #include "particule.h"
@@ -34,18 +35,22 @@ void blur(int x1, int y1, int x2, int y2, SDL_Surface *surface)
     int offsetY = 0;
 
     uint8_t *VScreen = (uint8_t *)surface->pixels;
+
+#pragma omp for
     for (x = x1; x < x2; x++)
     {
+        offsetY = y1 * L;
         for (y = y1; y < y2; y++)
         {
-            offsetY = y * L;
             resultat =
                 VScreen[offsetY - L + x] +
                 VScreen[offsetY + L + x] +
                 VScreen[offsetY + (x + 1)] +
                 VScreen[offsetY + (x - 1)];
-            resultat = resultat / 4;
+            resultat = resultat >> 2;
             VScreen[offsetY + x] = resultat;
+
+            offsetY += L;
         }
     }
 }
