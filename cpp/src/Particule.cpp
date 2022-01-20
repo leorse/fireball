@@ -80,19 +80,19 @@ void Particule::initLife(bool ephemere)
     //int type = std::rand() % 2;
     //int type = uit(re);
     //une direction entre 1 et 360°
-    this->dir = 138; //uit_dir(re);//std::rand() % 360;
+    this->dir = uit_dir(re);//std::rand() % 360;
     this->poids = -5;
-    this->vitesse = 28;//25 + uit_vitesse(re);//(std::rand() % Particule::MAX_VITESSE);
-    this->taille = 2;//uit_taille(re);//(std::rand() % Particule::MAX_TAILLE);
+    this->vitesse = 25 + uit_vitesse(re);//(std::rand() % Particule::MAX_VITESSE);
+    this->taille = uit_taille(re);//(std::rand() % Particule::MAX_TAILLE);
     this->tps = 0;
-    this->vie = 18;//1 + uit_duree(re);//(std::rand() % Particule::MAX_DUREE);
+    this->vie = 1 + uit_duree(re);//(std::rand() % Particule::MAX_DUREE);
     this->x = 0;
     this->y = 0;
     this->dX = 0;
     this->dY = 0;
     this->ephemere = false;
-    cout<< "init particule: dir:"<<this->dir<<", poids:"<<this->poids<<", vitesste:"<<this->vitesse<<", taille:"<<this->taille<<", vie:"<<this->vie<<endl;
-    cout<< "              : x:"<<this->x<<", y:"<<this->y<<", vitesste:"<<this->vitesse<<", taille:"<<this->taille<<", vie:"<<this->vie<<endl;
+    //cout<< "init particule: dir:"<<this->dir<<", poids:"<<this->poids<<", vitesste:"<<this->vitesse<<", taille:"<<this->taille<<", vie:"<<this->vie<<endl;
+    //cout<< "              : x:"<<this->x<<", y:"<<this->y<<", vitesste:"<<this->vitesse<<", taille:"<<this->taille<<", vie:"<<this->vie<<endl;
     /*
     init particule: dir:138, poids:-5, vitesste:28, taille:2, vie:18
               : x:0, y:0, vitesste:28, taille:2, vie:18

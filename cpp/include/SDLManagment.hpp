@@ -14,6 +14,9 @@ private:
 public:
     static SDL_Renderer *sdlRenderer;
     static SDL_Surface *surface;
+    SDL_Surface *phongmap;
+    SDL_Surface *bump;
+    SDL_Surface *cache;
 
     void render(void);
     SDLManagment();

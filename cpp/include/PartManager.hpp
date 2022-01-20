@@ -25,7 +25,7 @@ public:
 
     list<unique_ptr<Particule>> particules;
     
-    static const int NB_PARTICULE = 1;
+    static const int NB_PARTICULE = 100;
 
     unique_ptr<Particule> factoryParticule();
 

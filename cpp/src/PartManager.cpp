@@ -58,7 +58,6 @@ void PartManager::growParticules()
 {
     for (auto it = this->particules.begin(); it != this->particules.end(); it++)
     {
-        //Particule& particule = it;
         auto particule = it->get();
         particule->grow();
         if (!particule->isAlive())

@@ -32,6 +32,10 @@ int main(int argc, char *argv[])
                 {
                     //keyPress(&event.key, &app);
                 }
+                if (event.type == SDL_MOUSEMOTION)
+                {
+                    app.setMousePosition(event.motion.x,event.motion.y);
+                }
             }
             app.growParticules();
 
