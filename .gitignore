@@ -54,3 +54,6 @@ dkms.conf
 
 #visual code workspace
 */*.code-workspace
+
+*/build
+*/.vscode
