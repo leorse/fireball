@@ -4,6 +4,7 @@
 #include <array>
 
 #include "Particule.hpp"
+#include "Logo.hpp"
 
 class Drawer
 {
@@ -16,10 +17,11 @@ public:
     void putPixel(int x, int y, int couleur);
     void blur(int x1, int y1, int x2, int y2);
     void drawline(int x0, int y0, int x1, int y1, int couleur);
-    void afficherLogo(void);
+    void afficherLogo(int x, int y);
+    void afficherLogoTopRight();
     void afficheurSimple(Particule *);
     void afficheurTrainee(Particule *part);
-    void initSprites(void);
+    void initSprites();
     //void afficherBoard(CONTEXTE *contexte/*, clock_t t1, clock_t t2, long nbFrame*/);
 
 private:

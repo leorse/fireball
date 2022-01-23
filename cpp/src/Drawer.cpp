@@ -16,42 +16,26 @@ void Drawer::initSprites(void)
     vector<bool> vec1 = {true};
     this->sprites.push_back(vec1);
 
-    vector<bool> vec2 =
-        {true, false,
-         false, true};
+    vector<bool> vec2 = {true, false, false, true};
     this->sprites.push_back(vec2);
 
-    vector<bool> vec3 =
-        {false, true, false,
-         true, true, true,
-         false, true, false};
+    vector<bool> vec3 = {false, true, false, true, true, true, false, true, false};
     this->sprites.push_back(vec3);
 
-    vector<bool> vec4 =
-        {false, true, false, false,
-         false, true, true, true,
-         true, true, true, false,
-         false, false, true, false};
+    vector<bool> vec4 = {false, true, false, false, false, true, true, true, true, true, true, false, false, false,
+                         true, false};
     this->sprites.push_back(vec4);
 
-    vector<bool> vec5 =
-        {false, false, true, false, false,
-         false, true, true, true, false,
-         true, true, true, true, true,
-         false, true, true, true, false,
-         false, false, true, false, false};
+    vector<bool> vec5 = {false, false, true, false, false, false, true, true, true, false, true, true, true, true, true,
+                         false, true, true, true, false, false, false, true, false, false};
     this->sprites.push_back(vec5);
 
-    vector<bool> vec6 =
-        {false, false, true, false, false, false,
-         false, true, true, true, false, false,
-         false, true, true, true, true, true,
-         true, true, true, true, true, false,
-         false, true, true, true, true, false,
-         false, false, false, true, false, false};
+    vector<bool> vec6 = {false, false, true, false, false, false, false, true, true, true, false, false, false, true,
+                         true, true, true, true, true, true, true, true, true, false, false, true, true, true, true,
+                         false, false, false, false, true, false, false};
     this->sprites.push_back(vec6);
 
-    cout<<"fin init sprites"<<endl;
+    cout << "fin init sprites" << endl;
 }
 
 void Drawer::putPixel(int x, int y, int couleur)
@@ -61,7 +45,7 @@ void Drawer::putPixel(int x, int y, int couleur)
     {
         return;
     }
-    uint8_t *offscreen = (uint8_t *)surface->pixels;
+    uint8_t *offscreen = (uint8_t *) surface->pixels;
     offscreen[y * App::LARGEUR + x] = couleur;
 }
 
@@ -72,32 +56,33 @@ void Drawer::blur(int x1, int y1, int x2, int y2)
 
     SDL_Surface *surface = SDLManagment::surface;
 
-    uint8_t *VScreen = (uint8_t *)surface->pixels;
+    uint8_t *VScreen = (uint8_t *) surface->pixels;
     for (x = x1; x < x2; x++)
     {
         for (y = y1; y < y2; y++)
         {
-            resultat =
-                VScreen[(y - 1) * App::LARGEUR + x] +
-                VScreen[(y + 1) * App::LARGEUR + x] +
-                VScreen[y * App::LARGEUR + (x + 1)] +
-                VScreen[y * App::LARGEUR + (x - 1)];
+            resultat = VScreen[(y - 1) * App::LARGEUR + x] + VScreen[(y + 1) * App::LARGEUR + x] +
+                       VScreen[y * App::LARGEUR + (x + 1)] + VScreen[y * App::LARGEUR + (x - 1)];
             resultat = resultat / 4;
             VScreen[y * App::LARGEUR + x] = resultat;
         }
     }
 }
 
-void Drawer::afficherLogo(void)
+void Drawer::afficherLogoTopRight()
 {
-    SDL_Surface *VScreen = SDLManagment::surface;
-    for (int incX = 0; incX < LOGO_W; incX++)
+    afficherLogo(App::LARGEUR - Logo::WIDTH, 0);
+}
+
+void Drawer::afficherLogo(int x, int y)
+{
+    for (int incX = 0; incX < Logo::WIDTH; incX++)
     {
-        for (int incY = 0; incY < LOGO_H; incY++)
+        for (int incY = 0; incY < Logo::HEIGHT; incY++)
         {
-            if (cpp_logo_map[incY * LOGO_W + incX] != 0x00)
+            if (Logo::logo_map[incY * Logo::WIDTH + incX] != 0x00)
             {
-                putPixel(App::LARGEUR - LOGO_W + incX, incY, 255);
+                putPixel(x + incX, y + incY, 255);
             }
         }
     }
@@ -156,7 +141,8 @@ void Drawer::afficheurTrainee(Particule *part)
                 if (sprite.at((incX * taille) + incY) == true)
                 {
                     putPixel(posX + incX, posY + incY, couleur);
-                    drawline(posX + incX, posY + incY, posX - part->getDX() + incX, posY - part->getDY() + incY, couleur);
+                    drawline(posX + incX, posY + incY, posX - part->getDX() + incX, posY - part->getDY() + incY,
+                             couleur);
                 }
             }
         }
@@ -173,7 +159,9 @@ void Drawer::drawline(int x0, int y0, int x1, int y1, int couleur)
     { /* loop */
         this->putPixel(x0, y0, couleur);
         if (x0 == x1 && y0 == y1)
+        {
             break;
+        }
         e2 = 2 * err;
         if (e2 >= dy)
         {

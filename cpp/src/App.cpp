@@ -26,8 +26,15 @@ void App::mousePress(SDL_MouseButtonEvent mbe)
 
 void App::growParticules()
 {
+
+}
+
+
+void App::render()
+{
     this->partManager.growParticules();
     this->partManager.drawParticules();
+    this->drawer.afficherLogoTopRight();
 }
 
 bool App::isProgramAlive()

@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include "PartManager.hpp"
+#include "Drawer.hpp"
 
 class App
 {
@@ -24,6 +25,8 @@ private:
     };
 
     enum MODE_EFFECT modeEffect;
+
+    Drawer drawer;
 public:
     void keyPress(SDL_KeyboardEvent *kE);
 
@@ -64,6 +67,8 @@ public:
     void growParticules();
 
     void drawParticules();
+
+    void render();
 
     void mousePress(SDL_MouseButtonEvent mbe);
 

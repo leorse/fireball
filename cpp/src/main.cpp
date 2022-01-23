@@ -37,7 +37,11 @@ int main(int argc, char *argv[])
                     app.setMousePosition(event.motion.x,event.motion.y);
                 }
             }
-            app.growParticules();
+            app.render();
+            //if (contexte.drawLogo)
+           // {
+       //         afficherLogoTopRight(contexte.bump);
+            //}
 
             sdlManagment.render();
         }

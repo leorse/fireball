@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/modules)
 find_package(SDL2 REQUIRED)
 find_package(SDL2TTF REQUIRED)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/output)
-set(SOURCES src/main.cpp src/App.cpp src/Drawer.cpp  src/Particule.cpp src/PartManager.cpp src/SDLManagment.cpp)
+set(SOURCES src/main.cpp src/App.cpp src/Drawer.cpp  src/Particule.cpp src/PartManager.cpp src/SDLManagment.cpp src/Logo.cpp)
 
 set(CMAKE_CXX_STANDARD 14)
 include_directories(include)
