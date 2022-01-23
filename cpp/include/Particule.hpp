@@ -26,6 +26,13 @@ protected:
     TypeParticule type;
 
     bool ephemere;
+    bool explosive;
+public:
+    bool isExplosive() const;
+
+    void setExplosive(bool explosive);
+
+protected:
 
     float refX, refY;
 
@@ -35,6 +42,7 @@ public:
     static const int MAX_VITESSE = 45;
     static const int MAX_TAILLE = 5;
     static const int MAX_DUREE = 25;
+    static const int CHANCE_EXPL = 10;
 
     void setSeed(std::default_random_engine);
 
@@ -82,7 +90,7 @@ public:
 
     void setDY(double dY);
 
-    bool getEphemere() const;
+    bool isEphemere() const;
 
     void setEphemere(bool ephemere);
 

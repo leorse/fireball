@@ -65,6 +65,8 @@ public:
 
     void drawParticules();
 
+    void mousePress(SDL_MouseButtonEvent mbe);
+
     App();
 
     ~App();

@@ -16,6 +16,14 @@ App::~App()
     cout << "app détruit" << endl;
 }
 
+void App::mousePress(SDL_MouseButtonEvent mbe)
+{
+    if (mbe.button == SDL_BUTTON_LEFT)
+    {
+        this->partManager.addParticules( 50, mbe.x, mbe.y);
+    }
+}
+
 void App::growParticules()
 {
     this->partManager.growParticules();
@@ -101,24 +109,24 @@ void App::switchMode()
 {
     if (this->modeEffect == FIREBALL)
     {
-        initialiserLumiere(contexte);
+      /*  initialiserLumiere(contexte);
         SDL_BlitSurface(contexte->surface, NULL, contexte->bump, NULL);
-        this->modeEffect = LIGHT;
+        this->modeEffect = LIGHT;*/
         //drawBumpMapping(contexte);
     }
     else if (this->modeEffect == LIGHT)
     {
-        //copier le cache
-        afficherLogoCenter(contexte->cache);
+       //copier le cache
+        /*afficherLogoCenter(contexte->cache);
         blur(1, 1, L - 1, H - 1, contexte->cache);
         blur(1, 1, L - 1, H - 1, contexte->cache);
-        blur(1, 1, L - 1, H - 1, contexte->cache);
+        blur(1, 1, L - 1, H - 1, contexte->cache);*/
         this->modeEffect = SHADOW;
     }
     else if (this->modeEffect == SHADOW)
     {
         this->modeEffect = GLASS;
-        afficherLogoTile(contexte->cache);
+        //afficherLogoTile(contexte->cache);
     }
     else if (this->modeEffect == GLASS)
     {

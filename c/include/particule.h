@@ -7,7 +7,7 @@
 #include <math.h>
 
 
-#define NB_BOULETTE 200
+#define NB_BOULETTE 1000
 #define MAX_VITESSE 45
 #define MAX_TAILLE 6
 #define MAX_DUREE 25

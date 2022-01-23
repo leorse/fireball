@@ -16,10 +16,9 @@ Comet::Comet(std::default_random_engine dre)
 
 Comet::~Comet()
 {
-    std::cout<<"particule comete détruite"<<std::endl;
 }
 
-void Comet::move(void)
+void Comet::move()
 {
     float oldX = this->x;
     float oldY = this->y;
@@ -37,7 +36,6 @@ void Comet::move(void)
     this->dX = (this->x-oldX)*5;
     this->dY = (this->y-oldY)*5;
 
-    std::cout<<"oldx:"<<oldX<<",oldy:"<<oldY<<",refx:"<<this->refX<<", refy:"<<this->refY<<",x"<<this->x<<", y:"<<this->y<<",dx:"<<this->dX<<",dy:"<<this->dX<<std::endl;
 }
 
 void Comet::grow(void)
@@ -47,7 +45,6 @@ void Comet::grow(void)
 
 void Comet::quisuisJe(void)
     {
-        cout<<"je suis comete"<<endl;
     }
 
 //////// Particule
@@ -60,12 +57,10 @@ Particule::Particule()
 
 Particule::~Particule()
 {
-    cout<<"aaaargh je suis détruite!!!"<<endl;
 }
 
 void Particule::quisuisJe(void)
     {
-        cout<<"je suis particule"<<endl;
     }
 
 void Particule::initLife(bool ephemere)
@@ -75,6 +70,7 @@ void Particule::initLife(bool ephemere)
     std::uniform_int_distribution<int> uit_vitesse{0,Particule::MAX_VITESSE};
     std::uniform_int_distribution<int> uit_taille{0,Particule::MAX_TAILLE};
     std::uniform_int_distribution<int> uit_duree{0,Particule::MAX_DUREE};
+    std::uniform_int_distribution<int> uit_explosive{0,Particule::CHANCE_EXPL};
     
     //std::srand(std::time(0));
     //int type = std::rand() % 2;
@@ -91,12 +87,7 @@ void Particule::initLife(bool ephemere)
     this->dX = 0;
     this->dY = 0;
     this->ephemere = false;
-    //cout<< "init particule: dir:"<<this->dir<<", poids:"<<this->poids<<", vitesste:"<<this->vitesse<<", taille:"<<this->taille<<", vie:"<<this->vie<<endl;
-    //cout<< "              : x:"<<this->x<<", y:"<<this->y<<", vitesste:"<<this->vitesse<<", taille:"<<this->taille<<", vie:"<<this->vie<<endl;
-    /*
-    init particule: dir:138, poids:-5, vitesste:28, taille:2, vie:18
-              : x:0, y:0, vitesste:28, taille:2, vie:18
-    */
+    this->explosive = uit_explosive(re)==0?true:false;
 }
 
 void Particule::setSeed(std::default_random_engine re)
@@ -209,7 +200,7 @@ void Particule::setDY(double dY)
     this->dY = dY;
 }
 
-bool Particule::getEphemere() const
+bool Particule::isEphemere() const
 {
     return this->ephemere;
 }
@@ -247,4 +238,14 @@ TypeParticule Particule::getType() const
 void Particule::setType(TypeParticule type)
 {
     this->type = type;
+}
+
+bool Particule::isExplosive() const
+{
+    return this->explosive;
+}
+
+void Particule::setExplosive(bool explosive)
+{
+    this->explosive = explosive;
 }

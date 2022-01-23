@@ -25,13 +25,15 @@ public:
 
     list<unique_ptr<Particule>> particules;
     
-    static const int NB_PARTICULE = 100;
+    static const int NB_PARTICULE = 500;
 
     unique_ptr<Particule> factoryParticule();
 
     void growParticules();
 
     void drawParticules();
+
+    void addParticules(int nombre, int x, int y);
 
     void setSeed(std::default_random_engine);
 

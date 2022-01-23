@@ -10,7 +10,7 @@ void initContexte(CONTEXTE *contexte)
     doPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
     initSprite(contexte->Sprites);
-    //� d�commenter pour afficher les sprites
+    //à décommenter pour afficher les sprites
     //drawSprite(contexte->Sprites);
 
     contexte->drawPalette = false;

@@ -169,7 +169,6 @@ void Drawer::drawline(int x0, int y0, int x1, int y1, int couleur)
     int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
     int err = dx + dy, e2; /* error value e_xy */
 
-    std::cout<<"ligne x:"<<x0<<", y:"<<y0<<",dx:"<<x1<<",dy:"<<y1<<std::endl;
     for (;;)
     { /* loop */
         this->putPixel(x0, y0, couleur);

@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
                 if (event.type == SDL_MOUSEBUTTONDOWN)
                 {
-                    //mousePress(&event.button, &app);
+                    app.mousePress(event.button);
                 }
                 if (event.type == SDL_KEYUP)
                 {
