@@ -240,6 +240,10 @@ void Particule::setType(TypeParticule type)
     this->type = type;
 }
 
+/**
+ * @brief Particule::isExplosive
+ * @return
+ */
 bool Particule::isExplosive() const
 {
     return this->explosive;

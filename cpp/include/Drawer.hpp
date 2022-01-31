@@ -16,6 +16,7 @@ public:
 
     void putPixel(int x, int y, int couleur);
     void blur(int x1, int y1, int x2, int y2);
+    void blurFast(int x1, int y1, int x2, int y2);
     void drawline(int x0, int y0, int x1, int y1, int couleur);
     void afficherLogo(int x, int y);
     void afficherLogoTopRight();

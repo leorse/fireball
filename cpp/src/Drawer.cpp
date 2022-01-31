@@ -69,6 +69,32 @@ void Drawer::blur(int x1, int y1, int x2, int y2)
     }
 }
 
+void Drawer::blurFast(int x1, int y1, int x2, int y2)
+{
+    int x, y;
+    int resultat;
+
+    SDL_Surface *surface = SDLManagment::surface;
+
+    uint8_t *VScreen = (uint8_t *) surface->pixels;
+    #pragma omp for
+    for (x = x1; x < x2; x++)
+    {
+        int offsetY = y1 * App::LARGEUR;
+
+        for (y = y1; y < y2; y++)
+        {
+            resultat = VScreen[offsetY - App::LARGEUR + x] + VScreen[offsetY+ App::LARGEUR + x] +
+                       VScreen[offsetY + (x + 1)] + VScreen[offsetY + (x - 1)];
+            resultat = resultat >> 2;
+            VScreen[offsetY + x] = resultat;
+
+            offsetY +=App::LARGEUR;
+        }
+    }
+
+}
+
 void Drawer::afficherLogoTopRight()
 {
     afficherLogo(App::LARGEUR - Logo::WIDTH, 0);

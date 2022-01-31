@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
                 }
                 if (event.type == SDL_KEYUP)
                 {
-                    //keyPress(&event.key, &app);
+                    app.keyPress(&event.key);
                 }
                 if (event.type == SDL_MOUSEMOTION)
                 {

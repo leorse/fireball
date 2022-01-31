@@ -17,6 +17,7 @@ private:
 
     bool drawBoard;
     bool drawBlur;
+    bool drawBlurFast;
     bool drawLogo;
 
     enum MODE_EFFECT
@@ -75,4 +76,6 @@ public:
     App();
 
     ~App();
+    bool getDrawBlurFast() const;
+    void setDrawBlurFast(bool newDrawBlurFast);
 };

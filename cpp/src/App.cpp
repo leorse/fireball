@@ -35,6 +35,14 @@ void App::render()
     this->partManager.growParticules();
     this->partManager.drawParticules();
     this->drawer.afficherLogoTopRight();
+    if(this->drawBlur)
+    {
+        this->drawer.blur(1,1,this->LARGEUR-1, this->HAUTEUR-1);
+    }
+    else if(this->drawBlurFast)
+    {
+        this->drawer.blurFast(1,1,this->LARGEUR-1, this->HAUTEUR-1);
+    }
 }
 
 bool App::isProgramAlive()
@@ -141,6 +149,16 @@ void App::switchMode()
     }
 }
 
+bool App::getDrawBlurFast() const
+{
+    return drawBlurFast;
+}
+
+void App::setDrawBlurFast(bool newDrawBlurFast)
+{
+    drawBlurFast = newDrawBlurFast;
+}
+
 void App::keyPress(SDL_KeyboardEvent *kE)
 {
     SDL_Keysym ks = kE->keysym;
@@ -155,6 +173,10 @@ void App::keyPress(SDL_KeyboardEvent *kE)
     if (kE->keysym.scancode == SDL_SCANCODE_F)
     {
         this->drawBlur = !this->drawBlur;
+    }
+    if (kE->keysym.scancode == SDL_SCANCODE_G)
+    {
+        this->drawBlurFast = !this->drawBlurFast;
     }
     if (kE->keysym.scancode == SDL_SCANCODE_L)
     {
