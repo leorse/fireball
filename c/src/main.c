@@ -1,100 +1,86 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <math.h>
 #include <time.h>
+
+/* GL/glew.h must be included before SDL2/SDL.h */
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mouse.h>
 
 #include "contexte.h"
 #include "particule.h"
 #include "initSDL.h"
 #include "affichage.h"
+#include "shader.h"
 
-void moveParticule(CONTEXTE *contexte)
+static void moveParticule(CONTEXTE *contexte)
 {
-    int i;
-    float temps;
-    PARTICULE *ptrParticule;
-    PARTICULE *particule = contexte->premier;
-
-    i = 0;
-    for (ptrParticule = particule; ptrParticule != NULL; ptrParticule = ptrParticule->suivant)
+    for (PARTICULE *p = contexte->premier; p != NULL; p = p->suivant)
     {
-        bool retour = ptrParticule->Grower(ptrParticule);
+        bool retour = p->Grower(p);
         if (retour)
         {
-            if (ptrParticule->explosive)
+            if (p->explosive)
             {
-                addParticule(contexte, 10, ptrParticule->x + ptrParticule->refX, ptrParticule->y + ptrParticule->refY);
-                //une particule ne peut exploquer qu'une seule fois
-                ptrParticule->explosive = false;
+                addParticule(contexte, 10,
+                             (int)(p->x + p->refX),
+                             (int)(p->y + p->refY));
+                p->explosive = false;
             }
             else
             {
-                ptrParticule = removeParticule(contexte, ptrParticule);
+                p = removeParticule(contexte, p);
             }
         }
     }
 }
 
-void mousePress(SDL_MouseButtonEvent *bE, CONTEXTE *contexte)
+static void mousePress(SDL_MouseButtonEvent *bE, CONTEXTE *contexte)
 {
     if (bE->button == SDL_BUTTON_LEFT)
-    {
         addParticule(contexte, 50, bE->x, bE->y);
+}
+
+static void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
+{
+    switch (kE->keysym.scancode)
+    {
+        case SDL_SCANCODE_P: switchPalette(contexte); break;
+        case SDL_SCANCODE_B: switchBoard(contexte);   break;
+        case SDL_SCANCODE_F: switchBlur(contexte);    break;
+        case SDL_SCANCODE_L: switchLogo(contexte);    break;
+        case SDL_SCANCODE_M: switchMode(contexte);    break;
+        default: break;
     }
 }
 
-void keyPress(SDL_KeyboardEvent *kE, CONTEXTE *contexte)
+int main(int argc, char *argv[])
 {
-    SDL_Keysym ks = kE->keysym;
-    if (kE->keysym.scancode == SDL_SCANCODE_P)
-    {
-        switchPalette(contexte);
-    }
-    if (kE->keysym.scancode == SDL_SCANCODE_B)
-    {
-        switchBoard(contexte);
-    }
-    if (kE->keysym.scancode == SDL_SCANCODE_F)
-    {
-        switchBlur(contexte);
-    }
-    if (kE->keysym.scancode == SDL_SCANCODE_L)
-    {
-        switchLogo(contexte);
-    }
-    if (kE->keysym.scancode == SDL_SCANCODE_M)
-    {
-        switchMode(contexte);
-    }
-}
-
-int main(int argv, char *argc[])
-{
+    (void)argc; (void)argv;
 
     SDL_Event event;
+    bool      exitProgram = false;
+    CONTEXTE  contexte;
 
-    SDL_Renderer *sdlRenderer;
-    bool exitProgram = false;
-    CONTEXTE contexte;
-
-    long nbFrame = 0L;
+    long    nbFrame = 0L;
     clock_t t1, t2;
-    int mouseX, mouseY;
+    int     mouseX = 0, mouseY = 0;
 
     initContexte(&contexte, 1000, 1000);
-    initSDL(&contexte, &sdlRenderer);
 
-    SDL_Texture *texture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, contexte.largeur, contexte.hauteur);
+    if (!initSDL(&contexte))
+    {
+        fprintf(stderr, "initSDL a échoué\n");
+        return 1;
+    }
+    if (!initGL(&contexte))
+    {
+        fprintf(stderr, "initGL a échoué\n");
+        return 1;
+    }
 
-    //initialiserLumiere(&contexte);
-    //exitProgram=true;
     while (!exitProgram)
     {
         nbFrame++;
-        Uint32 frameStart = SDL_GetTicks();
-        /* Recuperation du temps initial en "clock ticks" */
         t1 = clock();
 
         while (SDL_PollEvent(&event))
@@ -104,94 +90,48 @@ int main(int argv, char *argc[])
                 exitProgram = true;
                 break;
             }
-
             if (event.type == SDL_MOUSEBUTTONDOWN)
-            {
                 mousePress(&event.button, &contexte);
-            }
             if (event.type == SDL_KEYUP)
-            {
                 keyPress(&event.key, &contexte);
-            }
             if (event.type == SDL_MOUSEMOTION)
             {
                 mouseX = event.motion.x;
                 mouseY = event.motion.y;
             }
-            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+            if (event.type == SDL_WINDOWEVENT &&
+                event.window.event == SDL_WINDOWEVENT_RESIZED)
             {
                 int nouvW = event.window.data1;
                 int nouvH = event.window.data2;
                 redimensionnerContexte(&contexte, nouvW, nouvH);
-                SDL_DestroyTexture(texture);
-                texture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, nouvW, nouvH);
             }
         }
 
-        //l'affichage des particules se fait sur bump
+        /* Particle update and CPU drawing onto bump surface */
         moveParticule(&contexte);
         drawParticule(contexte.bump, contexte.Sprites, contexte.premier);
 
         if (contexte.drawBlur)
-        {
             blur(1, 1, contexte.largeur - 1, contexte.hauteur - 1, contexte.bump);
-        }
+
         if (contexte.drawLogo)
-        {
             afficherLogoTopRight(contexte.bump);
-        }
-        if (contexte.mode == FIREBALL)
-        {
-            SDL_BlitSurface(contexte.bump, NULL, contexte.surface, NULL);
-        }
 
-        if (contexte.drawPalette)
-        {
-            afficherPalette(contexte.surface);
-        }
-        /* Recuperation du temps final en "clock ticks" */
+        t2 = clock();
 
-        if (contexte.drawBoard)
-        {
-            t2 = clock();
-            afficherBoard(&contexte, contexte.surface, t1, t2, nbFrame);
-        }
+        /* GPU rendering */
+        glClear(GL_COLOR_BUFFER_BIT);
+        rendreGPU(&contexte, mouseX, mouseY, t1, t2, nbFrame);
 
-        if (contexte.mode == LIGHT)
-        {
-            doModeLight(&contexte, mouseX, mouseY);
-        }
-        if (contexte.mode == SHADOW)
-        {
-            doModeShadow(&contexte, mouseX, mouseY);
-        }
-        if (contexte.mode == GLASS)
-        {
-            doModeGlass(&contexte);
-        }
-        SDL_Surface *tmp = SDL_ConvertSurfaceFormat(contexte.surface, SDL_PIXELFORMAT_ARGB8888, 0);
-        SDL_UpdateTexture(texture, NULL, tmp->pixels, tmp->pitch);
-        SDL_FreeSurface(tmp);
-        SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
+        SDL_GL_SwapWindow(contexte.window);
 
-        SDL_RenderPresent(sdlRenderer);
-        //pour effacer
+        /* Clear bump next frame if blur is off (avoids particle trails accumulating) */
         if (!contexte.drawBlur)
-        {
-            SDL_FillRect(contexte.surface, NULL, 0);
-        }
-
-        Uint32 frameTime = SDL_GetTicks() - frameStart;
-        if (frameTime < 16)
-        {
-            SDL_Delay(16 - frameTime);
-        }
+            SDL_FillRect(contexte.bump, NULL, 0);
     }
 
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(sdlRenderer);
     detruireContexte(&contexte);
-    SDL_Quit();
 
     return 0;
 }
