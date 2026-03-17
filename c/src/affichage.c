@@ -7,7 +7,7 @@
 
 void putPixel(int x, int y, int couleur, bool force, SDL_Surface *surface)
 {
-    if (x < 1 || y < 1 || x >= L - 1 || y >= H - 1)
+    if (x < 1 || y < 1 || x >= surface->w - 1 || y >= surface->h - 1)
     {
         return;
     }
@@ -20,7 +20,7 @@ void putPixel(int x, int y, int couleur, bool force, SDL_Surface *surface)
         couleur = 255;
     }
     uint8_t *offscreen = (uint8_t *)surface->pixels;
-    int offset = y * L + x;
+    int offset = y * surface->pitch + x;
     if (force || offscreen[offset] < couleur)
     {
         offscreen[offset] = couleur;
@@ -31,21 +31,20 @@ void blur(int x1, int y1, int x2, int y2, SDL_Surface *surface)
 {
     int x, y;
     int resultat;
-    int offsetY = 0;
+    int pitch = surface->pitch;
+    int offsetY = y1 * pitch;
 
     uint8_t *VScreen = (uint8_t *)surface->pixels;
-    for (x = x1; x < x2; x++)
+    for (y = y1; y < y2; y++, offsetY += pitch)
     {
-        for (y = y1; y < y2; y++)
+        for (x = x1; x < x2; x++)
         {
-            offsetY = y * L;
             resultat =
-                VScreen[offsetY - L + x] +
-                VScreen[offsetY + L + x] +
-                VScreen[offsetY + (x + 1)] +
-                VScreen[offsetY + (x - 1)];
-            resultat = resultat / 4;
-            VScreen[offsetY + x] = resultat;
+                VScreen[offsetY - pitch + x] +
+                VScreen[offsetY + pitch + x] +
+                VScreen[offsetY + x + 1] +
+                VScreen[offsetY + x - 1];
+            VScreen[offsetY + x] = resultat >> 2;
         }
     }
 }
@@ -61,13 +60,13 @@ void drawParticule(SDL_Surface *VScreen, bool *Sprites[MAX_TAILLE], PARTICULE *p
 
 void afficherLogoTopRight(SDL_Surface *VScreen)
 {
-    afficherLogo(L - LOGO_W, 0, VScreen);
+    afficherLogo(VScreen->w - LOGO_W, 0, VScreen);
 }
 
 void afficherLogoTile(SDL_Surface *VScreen)
 {
-    int nbX = L / LOGO_W + 1;
-    int nbY = H / LOGO_H + 1;
+    int nbX = VScreen->w / LOGO_W + 1;
+    int nbY = VScreen->h / LOGO_H + 1;
 
     SDL_FillRect(VScreen, NULL, 0);
     for (int incX = 0; incX < nbX; incX++)
@@ -82,7 +81,7 @@ void afficherLogoTile(SDL_Surface *VScreen)
 void afficherLogoCenter(SDL_Surface *VScreen)
 {
     SDL_FillRect(VScreen, NULL, 0);
-    afficherLogo((L / 2) - (LOGO_W / 2), (H / 2) - (LOGO_H / 2), VScreen);
+    afficherLogo((VScreen->w / 2) - (LOGO_W / 2), (VScreen->h / 2) - (LOGO_H / 2), VScreen);
 }
 
 void afficherLogo(int x, int y, SDL_Surface *VScreen)
@@ -103,14 +102,14 @@ void afficherPalette(SDL_Surface *VScreen)
 {
     for (int incX = 0; incX < 40; incX++)
     {
-        for (int incY = 0; incY < H; incY++)
+        for (int incY = 0; incY < VScreen->h; incY++)
         {
-            putPixel(incX, incY, incY * 256 / H, false, VScreen);
+            putPixel(incX, incY, incY * 256 / VScreen->h, false, VScreen);
         }
     }
 }
 
-char *calculerInfosTimer(char *texte, clock_t t1, clock_t t2, long nbFrame)
+void calculerInfosTimer(char *texte, clock_t t1, clock_t t2, long nbFrame)
 {
     long clk_tck = CLOCKS_PER_SEC;
 
@@ -136,7 +135,7 @@ char *calculerInfosTimer(char *texte, clock_t t1, clock_t t2, long nbFrame)
     {
         tickMin = tick;
     }
-    sprintf(texte, "FPS : %ld, moyenne: %lf", (long)fps, moyenne);
+    snprintf(texte, 100, "FPS : %ld, moyenne: %lf", (long)fps, moyenne);
 }
 
 void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface, clock_t t1, clock_t t2, long nbFrame)
@@ -144,7 +143,7 @@ void afficherBoard(CONTEXTE *contexte, SDL_Surface *surface, clock_t t1, clock_t
     char texte[100];
     SDL_Rect dstRect = {100, 0, 50, 200};
 
-    sprintf(texte, "Nombre Particule:%d", contexte->nombreMeteor);
+    snprintf(texte, sizeof(texte), "Nombre Particule:%d", contexte->nombreMeteor);
 
     afficherTexte(texte, contexte, surface, dstRect);
     calculerInfosTimer(texte, t1, t2, nbFrame);
@@ -175,14 +174,14 @@ void afficherTexte(char *texte, CONTEXTE *contexte, SDL_Surface *surface, SDL_Re
 
 void initialiserLumiere(CONTEXTE *contexte)
 {
-    int taille = TAILLE_LUMIERE;
-    for (int x = 0; x < L; x++)
+    int taille = (contexte->largeur < contexte->hauteur ? contexte->largeur : contexte->hauteur) / 2;
+    for (int x = 0; x < contexte->largeur; x++)
     {
-        float deltaX = (L / 2) - x;
+        float deltaX = (contexte->largeur / 2) - x;
         float longX = deltaX * deltaX;
-        for (int y = 0; y < H; y++)
+        for (int y = 0; y < contexte->hauteur; y++)
         {
-            float deltaY = (H / 2) - y;
+            float deltaY = (contexte->hauteur / 2) - y;
             float longY = deltaY * deltaY;
             float longueur = sqrt(longX + longY);
             int hauteur = 0;
@@ -204,17 +203,19 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
     float rapportHauteur = hauteurLumiereCache / hauteurLumiere;
     int posX, posY;
     int offsetY = 0;
+    int larg = contexte->largeur;
+    int haut = contexte->hauteur;
 
     uint8_t *cache = (uint8_t *)contexte->cache->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
 
-    for (int incY = 0; incY < H; incY++)
+    for (int incY = 0; incY < haut; incY++)
     {
         float longY = y - incY;
         float longYCache = longY * rapportHauteur;
         posY = y - longYCache - calcOffset;
 
-        for (int incX = 0; incX < L; incX++)
+        for (int incX = 0; incX < larg; incX++)
         {
             float longX = x - incX;
             float longXCache = longX * rapportHauteur;
@@ -226,7 +227,7 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
             }
             else
             {
-                int offsetCache = posY * L + posX;
+                int offsetCache = posY * larg + posX;
                 if (offsetCache >= 0 && cache[offsetCache] != 0x00)
                 {
                     uint8_t couleurCache = cache[offsetCache];
@@ -254,87 +255,80 @@ void drawShadow(CONTEXTE *contexte, int x, int y, int offset)
 
             dest++;
         }
-        offsetY += L;
+        offsetY += larg;
     }
 }
 
 void drawBumpMapping(CONTEXTE *contexte, int x, int y)
 {
-    int xdist, ydist;
     int xdelta, ydelta;
-    int xtemp, ytemp, temp;
-    int incY, incX, offset = L;
+    int xtemp, ytemp;
+    int incY, incX;
     int lx, ly;
-    unsigned int u, v;
-    int offsetY = 0;
+    int larg = contexte->largeur;
+    int haut = contexte->hauteur;
+    int offsetY = larg;
     uint8_t *source = (uint8_t *)contexte->bump->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
     uint8_t *phonglightmap = (uint8_t *)contexte->phongmap->pixels;
 
-    ly = -(y - TAILLE_LUMIERE);
-    offsetY = L;
-    for (incY = 1; incY < H - 2; incY++)
+    ly = -(y - contexte->hauteur / 2);
+    for (incY = 1; incY < haut - 2; incY++)
     {
-        lx = -(x - TAILLE_LUMIERE);
+        lx = -(x - contexte->largeur / 2);
 
-        for (incX = 0; incX < L; incX++, offset++)
+        for (incX = 0; incX < larg; incX++)
         {
-            xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + (incX)]));
-            ydelta = ((source[offsetY + incX] - source[offsetY + L + incX]));
+            xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + incX]));
+            ydelta = ((source[offsetY + incX] - source[offsetY + larg + incX]));
             lx++;
 
             xtemp = xdelta + lx;
             ytemp = ydelta + ly;
-            if (xtemp < 0 || xtemp >= L || ytemp < 0 || ytemp >= H)
+            if (xtemp < 0 || xtemp >= larg || ytemp < 0 || ytemp >= haut)
             {
                 *dest++ = 0;
             }
             else
             {
-                u = ytemp;
-                v = xtemp;
-                *dest++ = phonglightmap[v * L + u];
+                *dest++ = phonglightmap[ytemp * larg + xtemp];
             }
         }
-        offsetY += L;
+        offsetY += larg;
         ly++;
     }
 }
 
 void drawGlass(CONTEXTE *contexte)
 {
-    int xdist, ydist;
     int xdelta, ydelta;
-    int xtemp, ytemp, temp;
-    int incY, incX, offset = L;
-
-    unsigned int u, v;
-    int offsetY = 0;
+    int xtemp, ytemp;
+    int incY, incX;
+    int larg = contexte->largeur;
+    int haut = contexte->hauteur;
+    int offsetY = larg;
     uint8_t *source = (uint8_t *)contexte->bump->pixels;
     uint8_t *dest = (uint8_t *)contexte->surface->pixels;
     uint8_t *cache = (uint8_t *)contexte->cache->pixels;
 
-    offsetY = L;
-    for (incY = 1; incY < H - 2; incY++)
+    for (incY = 1; incY < haut - 2; incY++)
     {
-        for (incX = 0; incX < L; incX++, offset++)
+        for (incX = 0; incX < larg; incX++)
         {
-            xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + (incX)]));
-            ydelta = ((source[offsetY + incX] - source[offsetY + L + incX]));
+            xdelta = ((source[offsetY + (incX - 1)] - source[offsetY + incX]));
+            ydelta = ((source[offsetY + incX] - source[offsetY + larg + incX]));
 
             xtemp = incX - xdelta;
             ytemp = incY - ydelta;
-            if (xtemp < 0 || xtemp >= L || ytemp < 0 || ytemp >= H)
+            if (xtemp < 0 || xtemp >= larg || ytemp < 0 || ytemp >= haut)
             {
                 *dest++ = 0;
             }
             else
             {
-                u = ytemp;
-                v = xtemp;
-                *dest++ = cache[ytemp * L + xtemp];
+                *dest++ = cache[ytemp * larg + xtemp];
             }
         }
-        offsetY += L;
+        offsetY += larg;
     }
 }

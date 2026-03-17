@@ -10,12 +10,7 @@
 #include "contexte.h"
 #include "particule.h"
 
-#define L 1000
-#define H 1000
 #define RANDOM(n) (((float)rand() / (float)RAND_MAX) * (n))
-
-#define PTX (L / 2)
-#define PTY (H / 2)
 
 enum MODE_EFFECT
 {
@@ -45,10 +40,14 @@ typedef struct
     bool drawLogo;
     enum MODE_EFFECT mode;
 
+    int largeur;
+    int hauteur;
+
 } CONTEXTE;
 
 
-void initContexte(CONTEXTE *);
+void initContexte(CONTEXTE *, int largeur, int hauteur);
+void redimensionnerContexte(CONTEXTE *contexte, int nouvLargeur, int nouvHauteur);
 void detruireContexte(CONTEXTE *contexte);
 PARTICULE *initElmt(CONTEXTE* contexte);
 void doPalette(SDL_Color *Palette);

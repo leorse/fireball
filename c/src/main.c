@@ -83,14 +83,17 @@ int main(int argv, char *argc[])
     clock_t t1, t2;
     int mouseX, mouseY;
 
-    initContexte(&contexte);
+    initContexte(&contexte, 1000, 1000);
     initSDL(&contexte, &sdlRenderer);
+
+    SDL_Texture *texture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, contexte.largeur, contexte.hauteur);
 
     //initialiserLumiere(&contexte);
     //exitProgram=true;
     while (!exitProgram)
     {
         nbFrame++;
+        Uint32 frameStart = SDL_GetTicks();
         /* Recuperation du temps initial en "clock ticks" */
         t1 = clock();
 
@@ -115,6 +118,14 @@ int main(int argv, char *argc[])
                 mouseX = event.motion.x;
                 mouseY = event.motion.y;
             }
+            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+            {
+                int nouvW = event.window.data1;
+                int nouvH = event.window.data2;
+                redimensionnerContexte(&contexte, nouvW, nouvH);
+                SDL_DestroyTexture(texture);
+                texture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, nouvW, nouvH);
+            }
         }
 
         //l'affichage des particules se fait sur bump
@@ -123,7 +134,7 @@ int main(int argv, char *argc[])
 
         if (contexte.drawBlur)
         {
-            blur(1, 1, L - 1, H - 1, contexte.bump);
+            blur(1, 1, contexte.largeur - 1, contexte.hauteur - 1, contexte.bump);
         }
         if (contexte.drawLogo)
         {
@@ -158,7 +169,9 @@ int main(int argv, char *argc[])
         {
             doModeGlass(&contexte);
         }
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(sdlRenderer, contexte.surface);
+        SDL_Surface *tmp = SDL_ConvertSurfaceFormat(contexte.surface, SDL_PIXELFORMAT_ARGB8888, 0);
+        SDL_UpdateTexture(texture, NULL, tmp->pixels, tmp->pitch);
+        SDL_FreeSurface(tmp);
         SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
 
         SDL_RenderPresent(sdlRenderer);
@@ -167,9 +180,15 @@ int main(int argv, char *argc[])
         {
             SDL_FillRect(contexte.surface, NULL, 0);
         }
-        SDL_DestroyTexture(texture);
+
+        Uint32 frameTime = SDL_GetTicks() - frameStart;
+        if (frameTime < 16)
+        {
+            SDL_Delay(16 - frameTime);
+        }
     }
 
+    SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(sdlRenderer);
     detruireContexte(&contexte);
     SDL_Quit();

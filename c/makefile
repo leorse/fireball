@@ -7,11 +7,10 @@ CC = gcc
 INCLUDE_PATHS = -I./include
 LIBRARY_PATHS =
 ifeq ($(OS),Windows_NT)
-	#INCLUDE_PATHS specifies the additional include paths we'll need
-	INCLUDE_PATHS += -IF:\nim\nim-1.4.4\dist\mingw64\include\SDL2
-
-	#LIBRARY_PATHS specifies the additional library paths we'll need
-	LIBRARY_PATHS += -LF:\nim\nim-1.4.4\dist\mingw64\lib
+	# Personnaliser SDL2_DIR selon votre installation (ex: C:/SDL2 ou F:/mingw64)
+	SDL2_DIR ?= F:/nim/nim-1.4.4/dist/mingw64
+	INCLUDE_PATHS += -I$(SDL2_DIR)/include/SDL2
+	LIBRARY_PATHS += -L$(SDL2_DIR)/lib
 endif
 
 #COMPILER_FLAGS specifies the additional compilation options we're using

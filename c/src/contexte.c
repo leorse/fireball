@@ -4,8 +4,10 @@
 #include "initSDL.h"
 #include "affichage.h"
 
-void initContexte(CONTEXTE *contexte)
+void initContexte(CONTEXTE *contexte, int largeur, int hauteur)
 {
+    contexte->largeur = largeur;
+    contexte->hauteur = hauteur;
     contexte->nombreMeteor = 0;
     doPalette(contexte->listeCouleur);
     contexte->dernier = initElmt(contexte);
@@ -67,8 +69,8 @@ PARTICULE *initElmt(CONTEXTE *contexte)
     *lst = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), NULL);
     ptr = *lst;
     ParticuleFactory(ptr);
-    ptr->refX = PTX;
-    ptr->refY = PTY;
+    ptr->refX = (float)(contexte->largeur / 2);
+    ptr->refY = (float)(contexte->hauteur / 2);
 
     contexte->nombreMeteor++;
 
@@ -76,8 +78,8 @@ PARTICULE *initElmt(CONTEXTE *contexte)
     {
         ptr = (PARTICULE *)__CT_creerElement(sizeof(PARTICULE), ptr);
         ParticuleFactory(ptr);
-        ptr->refX = PTX;
-        ptr->refY = PTY;
+        ptr->refX = (float)(contexte->largeur / 2);
+        ptr->refY = (float)(contexte->hauteur / 2);
         contexte->nombreMeteor++;
     }
 
@@ -92,6 +94,44 @@ void detruireContexte(CONTEXTE *contexte)
     SDL_FreeSurface(contexte->bump);
     SDL_FreeSurface(contexte->phongmap);
     SDL_FreeSurface(contexte->cache);
+}
+
+void redimensionnerContexte(CONTEXTE *contexte, int nouvLargeur, int nouvHauteur)
+{
+    SDL_FreeSurface(contexte->surface);
+    SDL_FreeSurface(contexte->bump);
+    SDL_FreeSurface(contexte->phongmap);
+    SDL_FreeSurface(contexte->cache);
+
+    contexte->largeur = nouvLargeur;
+    contexte->hauteur = nouvHauteur;
+
+    contexte->surface  = SDL_CreateRGBSurface(SDL_SWSURFACE, nouvLargeur, nouvHauteur, 8, 0, 0, 0, 0);
+    contexte->bump     = SDL_CreateRGBSurface(SDL_SWSURFACE, nouvLargeur, nouvHauteur, 8, 0, 0, 0, 0);
+    contexte->phongmap = SDL_CreateRGBSurface(SDL_SWSURFACE, nouvLargeur, nouvHauteur, 8, 0, 0, 0, 0);
+    contexte->cache    = SDL_CreateRGBSurface(SDL_SWSURFACE, nouvLargeur, nouvHauteur, 8, 0, 0, 0, 0);
+
+    SDL_SetPaletteColors(contexte->surface->format->palette,  contexte->listeCouleur, 0, 256);
+    SDL_SetPaletteColors(contexte->bump->format->palette,     contexte->listeCouleur, 0, 256);
+    SDL_SetPaletteColors(contexte->phongmap->format->palette, contexte->listeCouleur, 0, 256);
+    SDL_SetPaletteColors(contexte->cache->format->palette,    contexte->listeCouleur, 0, 256);
+
+    // Régénérer le contenu qui dépend des dimensions
+    if (contexte->mode == LIGHT || contexte->mode == SHADOW)
+    {
+        initialiserLumiere(contexte);
+    }
+    if (contexte->mode == SHADOW)
+    {
+        afficherLogoCenter(contexte->cache);
+        blur(1, 1, nouvLargeur - 1, nouvHauteur - 1, contexte->cache);
+        blur(1, 1, nouvLargeur - 1, nouvHauteur - 1, contexte->cache);
+        blur(1, 1, nouvLargeur - 1, nouvHauteur - 1, contexte->cache);
+    }
+    else if (contexte->mode == GLASS)
+    {
+        afficherLogoTile(contexte->cache);
+    }
 }
 
 void doPalette(SDL_Color *Palette)
@@ -131,6 +171,11 @@ void initSprite(bool *Sprites[MAX_TAILLE])
     {
         int taille = (i + 1) * (i + 1);
         Sprites[i] = (bool *)malloc(taille * sizeof(bool));
+        if (Sprites[i] == NULL)
+        {
+            printf("Erreur malloc sprite %d\n", i);
+            exit(EXIT_FAILURE);
+        }
         bool *sprite = Sprites[i];
         //|1|
         if (i == 0)
@@ -264,9 +309,9 @@ void switchMode(CONTEXTE *contexte)
     {
         //copier le cache
         afficherLogoCenter(contexte->cache);
-        blur(1, 1, L - 1, H - 1, contexte->cache);
-        blur(1, 1, L - 1, H - 1, contexte->cache);
-        blur(1, 1, L - 1, H - 1, contexte->cache);
+        blur(1, 1, contexte->largeur - 1, contexte->hauteur - 1, contexte->cache);
+        blur(1, 1, contexte->largeur - 1, contexte->hauteur - 1, contexte->cache);
+        blur(1, 1, contexte->largeur - 1, contexte->hauteur - 1, contexte->cache);
         contexte->mode = SHADOW;
     }
     else if (contexte->mode == SHADOW)

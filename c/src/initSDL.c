@@ -24,7 +24,7 @@ bool initSDL(CONTEXTE *contexte, SDL_Renderer **sdlRenderer)
         // handle error
     }
 
-    if ((sdlWindow = SDL_CreateWindow("ma fenêtre", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, L, H, SDL_WINDOW_OPENGL)) == NULL)
+    if ((sdlWindow = SDL_CreateWindow("ma fenêtre", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, contexte->largeur, contexte->hauteur, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE)) == NULL)
     {
         printf("non ça veut pas créer!");
         return false;
@@ -32,25 +32,25 @@ bool initSDL(CONTEXTE *contexte, SDL_Renderer **sdlRenderer)
 
     *sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
 
-    contexte->surface = SDL_CreateRGBSurface(SDL_SWSURFACE, L, H, 8, 0, 0, 0, 0);
+    contexte->surface = SDL_CreateRGBSurface(SDL_SWSURFACE, contexte->largeur, contexte->hauteur, 8, 0, 0, 0, 0);
     if(contexte->surface == NULL)
     {
         printf("ça ne veut pas créer surface");
         return false;
     }
-    contexte->bump = SDL_CreateRGBSurface(SDL_SWSURFACE, L, H, 8, 0, 0, 0, 0);
+    contexte->bump = SDL_CreateRGBSurface(SDL_SWSURFACE, contexte->largeur, contexte->hauteur, 8, 0, 0, 0, 0);
     if(contexte->bump == NULL)
     {
         printf("ça ne veut pas créer bump");
         return false;
     }
-    contexte->phongmap = SDL_CreateRGBSurface(SDL_SWSURFACE, L, H, 8, 0, 0, 0, 0);
+    contexte->phongmap = SDL_CreateRGBSurface(SDL_SWSURFACE, contexte->largeur, contexte->hauteur, 8, 0, 0, 0, 0);
     if(contexte->phongmap == NULL)
     {
         printf("ça ne veut pas créer phongmap");
         return false;
     }
-    contexte->cache = SDL_CreateRGBSurface(SDL_SWSURFACE, L, H, 8, 0, 0, 0, 0);
+    contexte->cache = SDL_CreateRGBSurface(SDL_SWSURFACE, contexte->largeur, contexte->hauteur, 8, 0, 0, 0, 0);
     if(contexte->cache == NULL)
     {
         printf("ça ne veut pas créer cache");
@@ -60,4 +60,5 @@ bool initSDL(CONTEXTE *contexte, SDL_Renderer **sdlRenderer)
     SDL_SetPaletteColors((contexte->bump)->format->palette, contexte->listeCouleur, 0, 256);
     SDL_SetPaletteColors((contexte->phongmap)->format->palette, contexte->listeCouleur, 0, 256);
     SDL_SetPaletteColors((contexte->cache)->format->palette, contexte->listeCouleur, 0, 256);
+    return true;
 }
